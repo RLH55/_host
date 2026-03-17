@@ -1,0 +1,10 @@
+{
+  "RLH55": {
+    "password": "446ac97080a207d44c2d1d028789438642b13a324cc312a0d202285285959671",
+    "created_at": "2026-03-17T00:00:00.000000",
+    "last_login": null,
+    "theme": "premium",
+    "is_admin": true,
+    "can_create_users": true
+  }
+}
