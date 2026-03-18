@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRO-Host2 | لوحة التحكم الأسطورية</title>
+    <title>BRO-Host | لوحة التحكم</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -11,104 +11,54 @@
             --primary: #00d2ff;
             --secondary: #3a7bd5;
             --accent: #ff00d2;
-            --bg-dark: #0a0e27;
-            --card-bg: rgba(15, 20, 40, 0.95);
+            --bg-dark: #050816;
+            --card-bg: rgba(10, 14, 39, 0.95);
             --text: #ffffff;
             --border: rgba(0, 210, 255, 0.4);
             --border-light: rgba(0, 210, 255, 0.15);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Cairo', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
 
         html, body {
             width: 100%;
-            height: 100%;
+            min-height: 100%;
             background-color: var(--bg-dark);
             color: var(--text);
             overflow-x: hidden;
         }
 
-        body {
-            display: flex;
-            flex-direction: column;
-        }
+        body { display: flex; flex-direction: column; }
 
-        /* خلفية متحركة أسطورية */
-        .animated-bg {
+        #canvas-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1428 100%);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
         }
 
-        .stars {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+        .grid-lines {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            background-image:
+                linear-gradient(rgba(0, 210, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 210, 255, 0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
         }
 
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.6;
-            animation: twinkle var(--duration) infinite ease-in-out;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 60px 60px; }
         }
 
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.3); }
-        }
-
-        .glow-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.3;
-        }
-
-        .glow-1 {
-            width: 400px;
-            height: 400px;
-            background: rgba(0, 210, 255, 0.3);
-            top: -100px;
-            right: -100px;
-            animation: moveGlow1 20s infinite ease-in-out;
-        }
-
-        .glow-2 {
-            width: 300px;
-            height: 300px;
-            background: rgba(58, 123, 213, 0.2);
-            bottom: -100px;
-            left: -100px;
-            animation: moveGlow2 25s infinite ease-in-out;
-        }
-
-        @keyframes moveGlow1 {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-50px, 50px); }
-        }
-
-        @keyframes moveGlow2 {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(50px, -50px); }
-        }
-
-        /* الحاوية الرئيسية */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 30px 20px;
+            padding: 25px 20px;
             flex: 1;
             position: relative;
             z-index: 10;
@@ -118,7 +68,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
             padding-bottom: 20px;
             border-bottom: 1px solid var(--border);
         }
@@ -129,10 +79,19 @@
             gap: 15px;
         }
 
+        .logo-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+        }
+
         .logo {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 900;
-            background: linear-gradient(to left, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), #fff, var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -142,12 +101,12 @@
 
         .header-controls {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             align-items: center;
         }
 
         .btn {
-            padding: 12px 25px;
+            padding: 11px 22px;
             border-radius: 12px;
             border: none;
             cursor: pointer;
@@ -155,21 +114,21 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             text-decoration: none;
             color: white;
             font-family: 'Cairo', sans-serif;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 210, 255, 0.3);
         }
 
         .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 210, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0, 210, 255, 0.5);
         }
 
         .btn-danger {
@@ -178,15 +137,15 @@
         }
 
         .btn-danger:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(255, 65, 108, 0.4);
         }
 
         /* شبكة السيرفرات */
         .servers-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 22px;
             margin-bottom: 30px;
         }
 
@@ -194,94 +153,90 @@
             background: var(--card-bg);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 25px;
-            padding: 30px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 210, 255, 0.1);
+            border-radius: 22px;
+            padding: 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 210, 255, 0.08);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-            animation: slideUp 0.6s ease-out;
+            animation: slideUp 0.5s ease-out;
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(25px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .server-card:hover {
             border-color: var(--primary);
-            transform: translateY(-8px);
-            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.7), 0 0 60px rgba(0, 210, 255, 0.2);
+            transform: translateY(-6px);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7), 0 0 50px rgba(0, 210, 255, 0.15);
         }
 
         .server-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .server-title {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
-            color: var(--text);
         }
 
         .status-badge {
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
         .status-running {
-            background: rgba(0, 255, 136, 0.2);
+            background: rgba(0, 255, 136, 0.15);
             color: #00ff88;
             border: 1px solid #00ff88;
         }
 
         .status-offline {
-            background: rgba(255, 65, 108, 0.2);
+            background: rgba(255, 65, 108, 0.15);
             color: #ff416c;
             border: 1px solid #ff416c;
         }
 
         .server-info {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--border-light);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 20px;
-            font-size: 14px;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 18px;
+            font-size: 13px;
         }
 
         .info-item {
             display: flex;
             justify-content: space-between;
-            margin: 8px 0;
+            margin: 6px 0;
             opacity: 0.8;
         }
 
-        .info-label {
-            color: var(--primary);
-        }
+        .info-label { color: var(--primary); }
 
-        /* أزرار التحكم */
         .server-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
         .action-btn {
-            padding: 12px;
-            border-radius: 12px;
+            padding: 11px;
+            border-radius: 11px;
             border: 1px solid var(--border);
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.04);
             color: white;
             cursor: pointer;
             font-weight: bold;
@@ -289,114 +244,84 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            font-size: 14px;
+            gap: 7px;
+            font-size: 13px;
             font-family: 'Cairo', sans-serif;
         }
 
         .action-btn:hover {
-            background: rgba(0, 210, 255, 0.15);
+            background: rgba(0, 210, 255, 0.12);
             border-color: var(--primary);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
-        .action-btn.danger {
-            color: #ff416c;
-            border-color: #ff416c;
-        }
+        .action-btn.danger { color: #ff416c; border-color: rgba(255, 65, 108, 0.4); }
+        .action-btn.danger:hover { background: rgba(255, 65, 108, 0.12); border-color: #ff416c; }
+        .action-btn.success { color: #00ff88; border-color: rgba(0, 255, 136, 0.4); }
+        .action-btn.success:hover { background: rgba(0, 255, 136, 0.12); border-color: #00ff88; }
+        .action-btn.info { color: #00d2ff; border-color: rgba(0, 210, 255, 0.4); }
+        .action-btn.info:hover { background: rgba(0, 210, 255, 0.12); }
+        .action-btn.proxy { color: #b06aff; border-color: rgba(176, 106, 255, 0.4); grid-column: 1 / -1; }
+        .action-btn.proxy:hover { background: rgba(176, 106, 255, 0.12); border-color: #b06aff; }
 
-        .action-btn.danger:hover {
-            background: rgba(255, 65, 108, 0.15);
-        }
-
-        .action-btn.success {
-            color: #00ff88;
-            border-color: #00ff88;
-        }
-
-        .action-btn.success:hover {
-            background: rgba(0, 255, 136, 0.15);
-        }
-
-        .action-btn.info {
-            color: #00d2ff;
-            border-color: #00d2ff;
-        }
-
-        .action-btn.info:hover {
-            background: rgba(0, 210, 255, 0.15);
-        }
-
-        .action-btn.proxy {
-            color: #9c27b0;
-            border-color: #9c27b0;
-            grid-column: 1 / -1;
-        }
-
-        .action-btn.proxy:hover {
-            background: rgba(156, 39, 176, 0.15);
-        }
-
-        /* الـ Modals */
+        /* Modals */
         .modal {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            backdrop-filter: blur(5px);
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            backdrop-filter: blur(8px);
         }
 
         .modal-content {
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: 25px;
-            padding: 40px;
+            padding: 35px;
             width: 90%;
-            max-width: 550px;
+            max-width: 520px;
+            max-height: 85vh;
+            overflow-y: auto;
             position: relative;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
-            animation: slideDown 0.3s ease-out;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 210, 255, 0.15);
+            animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-50px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
         .modal-close {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            background: none;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.1);
             border: none;
-            color: var(--text);
-            font-size: 28px;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
             cursor: pointer;
-            opacity: 0.6;
-            transition: 0.3s;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
         }
 
-        .modal-close:hover {
-            opacity: 1;
-        }
+        .modal-close:hover { background: rgba(255, 65, 108, 0.3); }
 
         .modal-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 25px;
+            font-size: 22px;
+            font-weight: 900;
             color: var(--primary);
+            margin-bottom: 25px;
+            text-align: center;
         }
 
         .form-group {
@@ -405,19 +330,20 @@
 
         .form-group label {
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             font-size: 14px;
-            opacity: 0.8;
+            font-weight: 600;
+            color: var(--primary);
         }
 
         .form-control {
             width: 100%;
-            padding: 15px;
+            padding: 13px 16px;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-light);
+            border: 1.5px solid var(--border-light);
             border-radius: 12px;
-            color: white;
-            font-size: 16px;
+            color: var(--text);
+            font-size: 15px;
             transition: all 0.3s;
             font-family: 'Cairo', sans-serif;
         }
@@ -425,127 +351,166 @@
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            background: rgba(0, 210, 255, 0.08);
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+            background: rgba(0, 210, 255, 0.07);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
         }
 
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.4);
+        select.form-control option {
+            background: #0a0e27;
+            color: white;
         }
 
         .modal-buttons {
             display: flex;
             gap: 12px;
-            margin-top: 30px;
+            margin-top: 20px;
         }
 
-        .modal-buttons .btn {
-            flex: 1;
-            justify-content: center;
-        }
+        .modal-buttons .btn { flex: 1; justify-content: center; }
 
-        /* قائمة الملفات */
-        .files-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin: 20px 0;
-        }
+        .files-list { max-height: 250px; overflow-y: auto; }
 
         .file-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-light);
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-light);
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.2s;
         }
+
+        .file-item:hover { background: rgba(0, 210, 255, 0.07); border-color: var(--border); }
 
         .file-name {
-            color: var(--primary);
-            word-break: break-all;
-        }
-
-        .file-size {
-            opacity: 0.6;
-            white-space: nowrap;
-            margin-right: 10px;
-        }
-
-        /* زر المطور */
-        .dev-btn {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            background: rgba(0, 136, 204, 0.2);
-            border: 1px solid #0088cc;
-            color: #0088cc;
-            padding: 12px 20px;
-            border-radius: 50px;
-            text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-weight: bold;
-            backdrop-filter: blur(10px);
-            z-index: 100;
-            transition: all 0.3s;
+            gap: 8px;
+            font-size: 13px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        .dev-btn:hover {
-            background: #0088cc;
-            color: white;
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(0, 136, 204, 0.5);
+        .file-name.startup-file { color: #00ff88; font-weight: bold; }
+
+        .file-size { font-size: 12px; opacity: 0.6; flex-shrink: 0; }
+
+        .file-actions { display: flex; gap: 6px; }
+
+        .file-btn {
+            padding: 4px 10px;
+            border-radius: 7px;
+            border: 1px solid;
+            background: transparent;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.2s;
         }
 
-        /* الرسالة الفارغة */
+        .file-btn.set-startup {
+            color: #00ff88;
+            border-color: rgba(0, 255, 136, 0.4);
+        }
+
+        .file-btn.set-startup:hover { background: rgba(0, 255, 136, 0.15); }
+
+        .file-btn.delete-file {
+            color: #ff416c;
+            border-color: rgba(255, 65, 108, 0.4);
+        }
+
+        .file-btn.delete-file:hover { background: rgba(255, 65, 108, 0.15); }
+
+        .startup-info {
+            background: rgba(0, 255, 136, 0.08);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 13px;
+            color: #00ff88;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .empty-state {
-            grid-column: 1 / -1;
             text-align: center;
-            padding: 80px 20px;
+            padding: 60px 20px;
             opacity: 0.5;
         }
 
-        .empty-state-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
+        .empty-state-icon { font-size: 60px; margin-bottom: 15px; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 15px 25px;
+            font-size: 15px;
+            font-weight: bold;
+            z-index: 9999;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+        }
+
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.success { border-color: #00ff88; color: #00ff88; }
+        .toast.error { border-color: #ff416c; color: #ff416c; }
+
+        /* رابط المطور */
+        .dev-link {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .dev-link:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+            transform: translateY(-3px);
         }
 
         @media (max-width: 768px) {
-            .servers-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .server-actions {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-content {
-                width: 95%;
-                padding: 30px 20px;
-            }
-
-            .dev-btn {
-                bottom: 20px;
-                left: 20px;
-            }
+            .servers-grid { grid-template-columns: 1fr; }
+            header { flex-direction: column; gap: 15px; }
+            .header-controls { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
-    <div class="animated-bg">
-        <div class="glow-orb glow-1"></div>
-        <div class="glow-orb glow-2"></div>
-        <div class="stars" id="stars"></div>
-    </div>
+    <canvas id="canvas-bg"></canvas>
+    <div class="grid-lines"></div>
 
     <div class="container">
         <header>
             <div class="logo-section">
-                <span class="logo">BRO HOST</span>
+                <img src="/avatar.png" alt="BRO" class="logo-avatar" onerror="this.style.display='none'">
+                <div class="logo">BRO HOST</div>
             </div>
             <div class="header-controls">
                 <button onclick="showCreateModal()" class="btn btn-primary">
@@ -558,7 +523,7 @@
         </header>
 
         <div class="servers-grid" id="serversList">
-            <div class="empty-state">
+            <div class="empty-state" style="grid-column:1/-1;">
                 <div class="empty-state-icon">⏳</div>
                 <p>جاري تحميل السيرفرات...</p>
             </div>
@@ -568,15 +533,17 @@
     <!-- نافذة إنشاء سيرفر -->
     <div class="modal" id="createModal">
         <div class="modal-content">
-            <button class="modal-close" onclick="hideCreateModal()">×</button>
+            <button class="modal-close" onclick="hideModal('createModal')">×</button>
             <div class="modal-title">إنشاء سيرفر جديد</div>
             <div class="form-group">
                 <label>اسم السيرفر</label>
-                <input type="text" id="serverName" class="form-control" placeholder="مثال: my-bot-server">
+                <input type="text" id="serverName" class="form-control" placeholder="مثال: my-bot" onkeypress="if(event.key==='Enter') createServer()">
             </div>
             <div class="modal-buttons">
-                <button onclick="createServer()" class="btn btn-primary">إنشاء</button>
-                <button onclick="hideCreateModal()" class="btn" style="background: #333;">إلغاء</button>
+                <button onclick="createServer()" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> إنشاء
+                </button>
+                <button onclick="hideModal('createModal')" class="btn" style="background:#333;">إلغاء</button>
             </div>
         </div>
     </div>
@@ -584,25 +551,29 @@
     <!-- نافذة معلومات السيرفر -->
     <div class="modal" id="infoModal">
         <div class="modal-content">
-            <button class="modal-close" onclick="hideInfoModal()">×</button>
+            <button class="modal-close" onclick="hideModal('infoModal')">×</button>
             <div class="modal-title" id="infoTitle">معلومات السيرفر</div>
             <div id="infoContent"></div>
-            <button onclick="hideInfoModal()" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 20px;">إغلاق</button>
+            <div class="modal-buttons">
+                <button onclick="hideModal('infoModal')" class="btn btn-primary" style="justify-content:center;">إغلاق</button>
+            </div>
         </div>
     </div>
 
     <!-- نافذة رفع الملفات -->
     <div class="modal" id="uploadModal">
         <div class="modal-content">
-            <button class="modal-close" onclick="hideUploadModal()">×</button>
+            <button class="modal-close" onclick="hideModal('uploadModal')">×</button>
             <div class="modal-title" id="uploadTitle">رفع ملفات</div>
             <div class="form-group">
                 <label>اختر الملفات</label>
                 <input type="file" id="fileInput" class="form-control" multiple>
             </div>
             <div class="modal-buttons">
-                <button onclick="uploadFiles()" class="btn btn-primary">رفع</button>
-                <button onclick="hideUploadModal()" class="btn" style="background: #333;">إلغاء</button>
+                <button onclick="uploadFiles()" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> رفع
+                </button>
+                <button onclick="hideModal('uploadModal')" class="btn" style="background:#333;">إلغاء</button>
             </div>
         </div>
     </div>
@@ -610,47 +581,126 @@
     <!-- نافذة البروكسي -->
     <div class="modal" id="proxyModal">
         <div class="modal-content">
-            <button class="modal-close" onclick="hideProxyModal()">×</button>
+            <button class="modal-close" onclick="hideModal('proxyModal')">×</button>
             <div class="modal-title" id="proxyTitle">نظام البروكسي</div>
             <div id="proxyContent"></div>
-            <button onclick="hideProxyModal()" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 20px;">إغلاق</button>
+            <div class="modal-buttons">
+                <button onclick="hideModal('proxyModal')" class="btn btn-primary" style="justify-content:center;">إغلاق</button>
+            </div>
         </div>
     </div>
 
-    <a href="https://t.me/RLH55" target="_blank" class="dev-btn">
-        <i class="fab fa-telegram-plane"></i> المطور @RLH55
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- رابط المطور -->
+    <a href="https://t.me/RLH55" target="_blank" class="dev-link">
+        <i class="fab fa-telegram-plane" style="color:#00d2ff;"></i> @RLH55
     </a>
 
     <script>
         let currentServer = null;
 
-        function createStars() {
-            const container = document.getElementById('stars');
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                const size = Math.random() * 2.5;
-                star.style.width = size + 'px';
-                star.style.height = size + 'px';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
-                container.appendChild(star);
-            }
+        // ===== خلفية Canvas =====
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const stars = [];
+        for (let i = 0; i < 150; i++) {
+            stars.push({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                r: Math.random() * 1.2 + 0.2,
+                alpha: Math.random(),
+                twinkleSpeed: Math.random() * 0.015 + 0.003
+            });
         }
 
-        function showModal(id) { document.getElementById(id).style.display = 'flex'; }
+        const nodes = [];
+        for (let i = 0; i < 30; i++) {
+            nodes.push({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4
+            });
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            grad.addColorStop(0, '#050816');
+            grad.addColorStop(0.5, '#0a0e27');
+            grad.addColorStop(1, '#050816');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            stars.forEach(s => {
+                s.alpha += s.twinkleSpeed;
+                if (s.alpha > 1 || s.alpha < 0) s.twinkleSpeed *= -1;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,255,255,${Math.abs(s.alpha)})`;
+                ctx.fill();
+            });
+
+            nodes.forEach(n => {
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+                if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+            });
+
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 160) {
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[i].x, nodes[i].y);
+                        ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.strokeStyle = `rgba(0,210,255,${0.1*(1-dist/160)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            nodes.forEach(n => {
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, 1.5, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0,210,255,0.35)';
+                ctx.fill();
+            });
+
+            requestAnimationFrame(drawCanvas);
+        }
+        drawCanvas();
+
+        // ===== Toast =====
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast ${type} show`;
+            setTimeout(() => { t.className = `toast ${type}`; }, 3000);
+        }
+
+        // ===== Modals =====
         function hideModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        function showCreateModal() { showModal('createModal'); }
-        function hideCreateModal() { hideModal('createModal'); document.getElementById('serverName').value = ''; }
-        function showInfoModal() { showModal('infoModal'); }
-        function hideInfoModal() { hideModal('infoModal'); }
-        function showUploadModal() { showModal('uploadModal'); }
-        function hideUploadModal() { hideModal('uploadModal'); document.getElementById('fileInput').value = ''; }
-        function showProxyModal() { showModal('proxyModal'); }
-        function hideProxyModal() { hideModal('proxyModal'); }
+        function showCreateModal() {
+            document.getElementById('serverName').value = '';
+            document.getElementById('createModal').style.display = 'flex';
+        }
 
+        // ===== تحميل السيرفرات =====
         async function loadServers() {
             try {
                 const res = await fetch('/api/servers/list');
@@ -667,12 +717,13 @@
                     const card = document.createElement('div');
                     card.className = 'server-card';
                     const isRunning = s.status === 'running';
-                    
+
                     card.innerHTML = `
                         <div class="server-header">
                             <div class="server-title">${s.name}</div>
                             <div class="status-badge ${isRunning ? 'status-running' : 'status-offline'}">
-                                ${isRunning ? '<i class="fas fa-circle"></i> يعمل' : '<i class="fas fa-circle"></i> متوقف'}
+                                <i class="fas fa-circle" style="font-size:8px;"></i>
+                                ${isRunning ? 'يعمل' : 'متوقف'}
                             </div>
                         </div>
 
@@ -681,10 +732,11 @@
                                 <span class="info-label">الحالة:</span>
                                 <span>${isRunning ? '🟢 يعمل الآن' : '🔴 متوقف'}</span>
                             </div>
+                            ${s.startup_file ? `<div class="info-item"><span class="info-label">ملف التشغيل:</span><span style="color:#00ff88;">📄 ${s.startup_file}</span></div>` : '<div class="info-item"><span class="info-label">ملف التشغيل:</span><span style="color:#ff6b8a;">⚠️ غير محدد</span></div>'}
                         </div>
 
                         <div class="server-actions">
-                            <button onclick="serverAction('${s.name}', '${isRunning ? 'stop' : 'start'}')" 
+                            <button onclick="serverAction('${s.name}', '${isRunning ? 'stop' : 'start'}')"
                                     class="action-btn ${isRunning ? 'danger' : 'success'}">
                                 ${isRunning ? '<i class="fas fa-stop"></i> إيقاف' : '<i class="fas fa-play"></i> تشغيل'}
                             </button>
@@ -695,7 +747,7 @@
 
                         <div class="server-actions">
                             <button onclick="showServerInfo('${s.name}')" class="action-btn info">
-                                <i class="fas fa-info-circle"></i> معلومات
+                                <i class="fas fa-folder-open"></i> الملفات
                             </button>
                             <button onclick="showUploadUI('${s.name}')" class="action-btn success">
                                 <i class="fas fa-cloud-upload-alt"></i> رفع ملفات
@@ -715,7 +767,7 @@
 
         async function createServer() {
             const name = document.getElementById('serverName').value.trim();
-            if (!name) { alert('أدخل اسم السيرفر'); return; }
+            if (!name) { showToast('أدخل اسم السيرفر', 'error'); return; }
 
             const res = await fetch('/api/servers/create', {
                 method: 'POST',
@@ -724,35 +776,43 @@
             });
 
             if (res.ok) {
-                hideCreateModal();
+                hideModal('createModal');
+                showToast('✅ تم إنشاء السيرفر بنجاح!');
                 loadServers();
             } else {
                 const err = await res.json();
-                alert('خطأ: ' + (err.error || 'فشل إنشاء السيرفر'));
+                showToast('❌ ' + (err.error || 'فشل إنشاء السيرفر'), 'error');
             }
         }
 
         async function deleteServer(name) {
             if (!confirm(`هل تريد حذف السيرفر "${name}"؟`)) return;
-
             const res = await fetch('/api/servers/delete', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({name})
             });
-
             if (res.ok) {
+                showToast('🗑️ تم حذف السيرفر');
                 loadServers();
             }
         }
 
         async function serverAction(name, action) {
-            await fetch('/api/servers/action', {
+            const res = await fetch('/api/servers/action', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({name, action})
             });
-            setTimeout(loadServers, 500);
+
+            const data = await res.json();
+
+            if (res.ok) {
+                showToast(action === 'start' ? '🚀 تم تشغيل السيرفر!' : '⏹️ تم إيقاف السيرفر');
+            } else {
+                showToast('❌ ' + (data.error || 'فشل العملية'), 'error');
+            }
+            setTimeout(loadServers, 600);
         }
 
         async function showServerInfo(name) {
@@ -760,33 +820,44 @@
             const res = await fetch(`/api/servers/info/${name}`);
             const info = await res.json();
 
-            let content = `
+            let content = '';
+
+            // معلومات ملف التشغيل
+            if (info.startup_file) {
+                content += `<div class="startup-info"><i class="fas fa-play-circle"></i> ملف التشغيل الحالي: <strong>${info.startup_file}</strong></div>`;
+            } else {
+                content += `<div style="background:rgba(255,107,138,0.1);border:1px solid rgba(255,107,138,0.3);border-radius:10px;padding:10px 14px;font-size:13px;color:#ff6b8a;margin-bottom:15px;">⚠️ لم يتم تحديد ملف التشغيل. اضغط "تعيين كملف تشغيل" على أحد الملفات أدناه.</div>`;
+            }
+
+            content += `
                 <div class="server-info">
-                    <div class="info-item">
-                        <span class="info-label">الحالة:</span>
-                        <span>${info.status === 'running' ? '🟢 يعمل' : '🔴 متوقف'}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">عدد الملفات:</span>
-                        <span>${info.file_count}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">الحجم الكلي:</span>
-                        <span>${(info.total_size / 1024 / 1024).toFixed(2)} MB</span>
-                    </div>
+                    <div class="info-item"><span class="info-label">الحالة:</span><span>${info.status === 'running' ? '🟢 يعمل' : '🔴 متوقف'}</span></div>
+                    <div class="info-item"><span class="info-label">عدد الملفات:</span><span>${info.file_count}</span></div>
+                    <div class="info-item"><span class="info-label">الحجم الكلي:</span><span>${(info.total_size / 1024 / 1024).toFixed(2)} MB</span></div>
                 </div>
-                <h4 style="margin-top: 20px; color: var(--primary); margin-bottom: 15px;">الملفات:</h4>
+                <h4 style="color:var(--primary);margin-bottom:12px;font-size:15px;">الملفات:</h4>
                 <div class="files-list">
             `;
 
             if (info.files.length === 0) {
-                content += '<div style="text-align: center; opacity: 0.5; padding: 30px;">لا توجد ملفات</div>';
+                content += '<div style="text-align:center;opacity:0.5;padding:25px;">لا توجد ملفات. ارفع ملفاتك أولاً.</div>';
             } else {
                 info.files.forEach(f => {
+                    const isStartup = f.name === info.startup_file;
+                    const canRun = f.name.endsWith('.py') || f.name.endsWith('.js');
                     content += `
                         <div class="file-item">
-                            <span class="file-name"><i class="fas fa-file"></i> ${f.name}</span>
-                            <span class="file-size">${(f.size / 1024).toFixed(2)} KB</span>
+                            <span class="file-name ${isStartup ? 'startup-file' : ''}">
+                                <i class="fas fa-file${f.name.endsWith('.py') ? '-code' : f.name.endsWith('.js') ? '-code' : ''}"></i>
+                                ${f.name} ${isStartup ? '⭐' : ''}
+                            </span>
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                <span class="file-size">${(f.size / 1024).toFixed(1)} KB</span>
+                                <div class="file-actions">
+                                    ${canRun && !isStartup ? `<button class="file-btn set-startup" onclick="setStartupFile('${name}', '${f.name}')">▶ تعيين تشغيل</button>` : ''}
+                                    <button class="file-btn delete-file" onclick="deleteFile('${name}', '${f.name}')">🗑</button>
+                                </div>
+                            </div>
                         </div>
                     `;
                 });
@@ -794,53 +865,81 @@
 
             content += '</div>';
             document.getElementById('infoContent').innerHTML = content;
-            document.getElementById('infoTitle').textContent = `معلومات السيرفر: ${name}`;
-            showInfoModal();
+            document.getElementById('infoTitle').textContent = `ملفات السيرفر: ${name}`;
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+
+        async function setStartupFile(serverName, filename) {
+            const res = await fetch('/api/servers/set_startup', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name: serverName, startup_file: filename})
+            });
+
+            if (res.ok) {
+                showToast(`✅ تم تعيين "${filename}" كملف تشغيل!`);
+                showServerInfo(serverName);
+                loadServers();
+            } else {
+                const err = await res.json();
+                showToast('❌ ' + (err.error || 'فشل'), 'error');
+            }
+        }
+
+        async function deleteFile(serverName, filename) {
+            if (!confirm(`حذف الملف "${filename}"؟`)) return;
+            const res = await fetch(`/api/servers/delete_file/${serverName}/${filename}`, {
+                method: 'POST'
+            });
+            if (res.ok) {
+                showToast('🗑️ تم حذف الملف');
+                showServerInfo(serverName);
+            }
         }
 
         function showUploadUI(name) {
             currentServer = name;
             document.getElementById('uploadTitle').textContent = `رفع ملفات - ${name}`;
-            showUploadModal();
+            document.getElementById('fileInput').value = '';
+            document.getElementById('uploadModal').style.display = 'flex';
         }
 
         async function uploadFiles() {
             const files = document.getElementById('fileInput').files;
-            if (files.length === 0) { alert('اختر ملفات'); return; }
+            if (files.length === 0) { showToast('اختر ملفات أولاً', 'error'); return; }
 
+            let success = 0;
             for (let file of files) {
                 const formData = new FormData();
                 formData.append('file', file);
-
-                await fetch(`/api/servers/upload/${currentServer}`, {
+                const res = await fetch(`/api/servers/upload/${currentServer}`, {
                     method: 'POST',
                     body: formData
                 });
+                if (res.ok) success++;
             }
 
-            alert('تم رفع الملفات بنجاح!');
-            hideUploadModal();
+            hideModal('uploadModal');
+            showToast(`✅ تم رفع ${success} ملف بنجاح!`);
             loadServers();
         }
 
         function showProxyUI(name) {
             currentServer = name;
             document.getElementById('proxyTitle').textContent = `البروكسي - ${name}`;
-
-            const content = `
+            const origin = window.location.origin;
+            document.getElementById('proxyContent').innerHTML = `
                 <div class="server-info">
-                    <p style="margin-bottom: 15px; opacity: 0.8;">استخدم هذا الرابط للوصول إلى السيرفر عبر البروكسي:</p>
-                    <div style="background: rgba(0, 210, 255, 0.1); padding: 15px; border-radius: 8px; border: 1px solid var(--border); word-break: break-all; font-family: monospace;">
-                        <code>/proxy/&lt;PORT&gt;/&lt;PATH&gt;</code>
+                    <p style="margin-bottom:12px;opacity:0.8;">استخدم هذا الرابط للوصول إلى السيرفر عبر البروكسي:</p>
+                    <div style="background:rgba(0,210,255,0.08);padding:14px;border-radius:10px;border:1px solid var(--border);word-break:break-all;font-family:monospace;font-size:13px;">
+                        ${origin}/proxy/&lt;PORT&gt;/&lt;PATH&gt;
                     </div>
-                    <p style="margin-top: 15px; font-size: 13px; opacity: 0.6;">
-                        <strong>مثال:</strong> <code>/proxy/8000/api/data</code>
+                    <p style="margin-top:12px;font-size:13px;opacity:0.6;">
+                        <strong>مثال:</strong> <code>${origin}/proxy/8000/api/data</code>
                     </p>
                 </div>
             `;
-
-            document.getElementById('proxyContent').innerHTML = content;
-            showProxyModal();
+            document.getElementById('proxyModal').style.display = 'flex';
         }
 
         function logout() {
@@ -849,7 +948,7 @@
             });
         }
 
-        createStars();
+        // تحميل أولي وتحديث دوري
         loadServers();
         setInterval(loadServers, 5000);
     </script>

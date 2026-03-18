@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRO-Host | تسجيل الدخول</title>
+    <title>OMAR BRO HOST — تسجيل الدخول</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -11,10 +11,10 @@
             --primary: #00d2ff;
             --secondary: #3a7bd5;
             --accent: #ff00d2;
-            --bg-dark: #0a0e27;
-            --card-bg: rgba(15, 20, 40, 0.9);
+            --bg-dark: #050816;
+            --card-bg: rgba(10, 14, 39, 0.92);
             --text: #ffffff;
-            --border: rgba(0, 210, 255, 0.3);
+            --border: rgba(0, 210, 255, 0.4);
             --border-light: rgba(0, 210, 255, 0.15);
         }
 
@@ -23,150 +23,236 @@
         body {
             background-color: var(--bg-dark);
             color: var(--text);
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            position: relative;
         }
 
-        /* خلفية متحركة أسطورية */
-        .animated-bg {
+        /* ===== خلفية متحركة أسطورية ===== */
+        #canvas-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1428 100%);
+            z-index: 0;
         }
 
-        .stars {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+        .particles-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            overflow: hidden;
         }
 
-        .star {
+        .particle {
             position: absolute;
-            background: white;
             border-radius: 50%;
-            opacity: 0.6;
-            animation: twinkle var(--duration) infinite ease-in-out;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            animation: floatParticle linear infinite;
+            pointer-events: none;
         }
 
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.3); }
+        @keyframes floatParticle {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
         }
 
         .glow-orb {
-            position: absolute;
+            position: fixed;
             border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.3;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 1;
         }
 
         .glow-1 {
-            width: 400px;
-            height: 400px;
-            background: rgba(0, 210, 255, 0.3);
-            top: -100px;
-            right: -100px;
-            animation: moveGlow1 20s infinite ease-in-out;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(0, 210, 255, 0.25) 0%, transparent 70%);
+            top: -200px; right: -200px;
+            animation: moveGlow1 18s infinite ease-in-out;
         }
 
         .glow-2 {
-            width: 300px;
-            height: 300px;
-            background: rgba(58, 123, 213, 0.2);
-            bottom: -100px;
-            left: -100px;
-            animation: moveGlow2 25s infinite ease-in-out;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(58, 123, 213, 0.2) 0%, transparent 70%);
+            bottom: -200px; left: -200px;
+            animation: moveGlow2 22s infinite ease-in-out;
+        }
+
+        .glow-3 {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255, 0, 210, 0.15) 0%, transparent 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse3 8s infinite ease-in-out;
         }
 
         @keyframes moveGlow1 {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-50px, 50px); }
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-80px, 60px) scale(1.1); }
+            66% { transform: translate(40px, -40px) scale(0.9); }
         }
 
         @keyframes moveGlow2 {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(50px, -50px); }
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(80px, -60px) scale(1.1); }
+            66% { transform: translate(-40px, 40px) scale(0.9); }
         }
 
-        /* البطاقة الرئيسية */
+        @keyframes pulse3 {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.3); }
+        }
+
+        /* خطوط الشبكة المتحركة */
+        .grid-lines {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            background-image:
+                linear-gradient(rgba(0, 210, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 210, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 60px 60px; }
+        }
+
+        /* ===== البطاقة الرئيسية ===== */
         .login-container {
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--border);
-            border-radius: 35px;
-            padding: 60px 40px;
+            border-radius: 30px;
+            padding: 50px 40px;
             width: 90%;
-            max-width: 500px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 210, 255, 0.2);
-            animation: slideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 480px;
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.7),
+                0 0 60px rgba(0, 210, 255, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: slideUp 0.9s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             z-index: 10;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* خط متوهج علوي */
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 20%; right: 20%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), var(--accent), var(--primary), transparent);
+            border-radius: 2px;
+            animation: scanLine 3s linear infinite;
         }
 
-        /* الأيقونة والعنوان */
+        @keyframes scanLine {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(60px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ===== قسم الشعار ===== */
         .logo-section {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
         }
 
-        .rocket-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
+        /* صورة البروفايل */
+        .avatar-wrapper {
+            position: relative;
             display: inline-block;
-            animation: float 3s ease-in-out infinite;
+            margin-bottom: 18px;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
+        .avatar-img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            box-shadow:
+                0 0 20px rgba(0, 210, 255, 0.5),
+                0 0 40px rgba(0, 210, 255, 0.3),
+                0 0 60px rgba(0, 210, 255, 0.1);
+            animation: avatarFloat 4s ease-in-out infinite;
+            display: block;
+        }
+
+        @keyframes avatarFloat {
+            0%, 100% { transform: translateY(0px); box-shadow: 0 0 20px rgba(0, 210, 255, 0.5), 0 0 40px rgba(0, 210, 255, 0.3); }
+            50% { transform: translateY(-8px); box-shadow: 0 0 30px rgba(0, 210, 255, 0.7), 0 0 60px rgba(0, 210, 255, 0.4); }
+        }
+
+        /* حلقة دوارة حول الصورة */
+        .avatar-ring {
+            position: absolute;
+            top: -6px; left: -6px;
+            width: calc(100% + 12px);
+            height: calc(100% + 12px);
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--primary);
+            border-right-color: var(--accent);
+            animation: spinRing 3s linear infinite;
+        }
+
+        @keyframes spinRing {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .logo-text {
-            font-size: 42px;
+            font-size: 36px;
             font-weight: 900;
-            background: linear-gradient(to left, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--primary), #ffffff, var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: 3px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-transform: uppercase;
         }
 
         .tagline {
-            font-size: 16px;
+            font-size: 14px;
             opacity: 0.6;
             color: var(--text);
-            font-weight: 300;
+            font-weight: 400;
             letter-spacing: 1px;
         }
 
-        /* حقول الإدخال */
+        /* ===== حقول الإدخال ===== */
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 22px;
             position: relative;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 12px;
-            font-size: 15px;
+            margin-bottom: 10px;
+            font-size: 14px;
             font-weight: 600;
-            opacity: 0.8;
+            opacity: 0.85;
             letter-spacing: 0.5px;
+            color: var(--primary);
         }
 
         .input-wrapper {
@@ -177,12 +263,12 @@
 
         .form-control {
             width: 100%;
-            padding: 16px 18px 16px 50px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1.5px solid var(--border-light);
-            border-radius: 15px;
+            padding: 15px 18px 15px 50px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(0, 210, 255, 0.2);
+            border-radius: 14px;
             color: var(--text);
-            font-size: 16px;
+            font-size: 15px;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: 'Cairo', sans-serif;
         }
@@ -190,51 +276,74 @@
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            background: rgba(0, 210, 255, 0.08);
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.3), inset 0 0 10px rgba(0, 210, 255, 0.1);
+            background: rgba(0, 210, 255, 0.07);
+            box-shadow: 0 0 25px rgba(0, 210, 255, 0.25), inset 0 0 15px rgba(0, 210, 255, 0.05);
         }
 
         .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 0.35);
         }
 
         .input-icon {
             position: absolute;
             left: 18px;
             color: var(--primary);
-            font-size: 18px;
+            font-size: 17px;
             pointer-events: none;
+            transition: all 0.3s;
         }
+
+        .form-control:focus ~ .input-icon {
+            color: var(--accent);
+            transform: scale(1.1);
+        }
+
+        /* زر إظهار/إخفاء كلمة المرور */
+        .toggle-pass {
+            position: absolute;
+            right: 15px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            font-size: 16px;
+            transition: color 0.3s;
+            padding: 5px;
+        }
+
+        .toggle-pass:hover { color: var(--primary); }
 
         /* خيار التذكر */
         .remember-group {
             display: flex;
             align-items: center;
-            margin-bottom: 30px;
-            gap: 10px;
-        }
-
-        .checkbox-custom {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--border);
-            border-radius: 6px;
+            margin-bottom: 28px;
+            gap: 12px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            background: transparent;
         }
 
         .remember-group input[type="checkbox"] {
             display: none;
         }
 
+        .checkbox-custom {
+            width: 22px;
+            height: 22px;
+            border: 2px solid rgba(0, 210, 255, 0.4);
+            border-radius: 7px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            background: transparent;
+            flex-shrink: 0;
+        }
+
         .remember-group input[type="checkbox"]:checked + .checkbox-custom {
             background: linear-gradient(45deg, var(--primary), var(--secondary));
             border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
         }
 
         .remember-group input[type="checkbox"]:checked + .checkbox-custom::after {
@@ -251,30 +360,29 @@
             user-select: none;
         }
 
-        /* زر الدخول */
+        /* ===== زر الدخول ===== */
         .btn-login {
             width: 100%;
             padding: 16px;
-            border-radius: 15px;
+            border-radius: 14px;
             border: none;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             font-weight: 900;
-            font-size: 18px;
+            font-size: 17px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-bottom: 15px;
+            margin-bottom: 14px;
             font-family: 'Cairo', sans-serif;
             position: relative;
             overflow: hidden;
             letter-spacing: 1px;
-            text-transform: uppercase;
-            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
+            box-shadow: 0 10px 35px rgba(0, 210, 255, 0.35);
         }
 
         .btn-login:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 210, 255, 0.5);
+            box-shadow: 0 18px 45px rgba(0, 210, 255, 0.55);
         }
 
         .btn-login:active {
@@ -284,28 +392,24 @@
         .btn-login::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
             transition: 0.6s;
         }
 
-        .btn-login:hover::before {
-            left: 100%;
-        }
+        .btn-login:hover::before { left: 100%; }
 
         /* زر المطور */
         .dev-btn {
             width: 100%;
-            padding: 14px;
-            border-radius: 15px;
-            border: 1.5px solid var(--border);
+            padding: 13px;
+            border-radius: 14px;
+            border: 1.5px solid rgba(0, 210, 255, 0.3);
             background: transparent;
             color: var(--text);
             font-weight: 700;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             transition: all 0.3s;
             font-family: 'Cairo', sans-serif;
@@ -318,127 +422,303 @@
 
         .dev-btn:hover {
             border-color: var(--primary);
-            background: rgba(0, 210, 255, 0.1);
+            background: rgba(0, 210, 255, 0.08);
             box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
         }
 
         /* الحقوق */
         .footer {
             text-align: center;
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 1px solid var(--border-light);
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(0, 210, 255, 0.1);
         }
 
         .copyright {
-            font-size: 13px;
-            opacity: 0.5;
-            margin-bottom: 10px;
-            letter-spacing: 0.5px;
+            font-size: 12px;
+            opacity: 0.45;
+            margin-bottom: 6px;
         }
 
         .version {
-            font-size: 12px;
-            opacity: 0.4;
+            font-size: 11px;
+            opacity: 0.35;
             color: var(--primary);
         }
 
+        /* رسالة الخطأ */
+        .error-msg {
+            background: rgba(255, 65, 108, 0.15);
+            border: 1px solid rgba(255, 65, 108, 0.4);
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 14px;
+            color: #ff6b8a;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        /* حالة التحميل */
+        .btn-login.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .btn-login.loading::after {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 600px) {
-            .login-container {
-                padding: 40px 25px;
-            }
-
-            .logo-text {
-                font-size: 32px;
-            }
-
-            .rocket-icon {
-                font-size: 60px;
-            }
+            .login-container { padding: 35px 22px; }
+            .logo-text { font-size: 28px; }
+            .avatar-img { width: 75px; height: 75px; }
         }
     </style>
 </head>
 <body>
-    <div class="animated-bg" id="bg">
-        <div class="glow-orb glow-1"></div>
-        <div class="glow-orb glow-2"></div>
-        <div class="stars" id="stars"></div>
-    </div>
+    <!-- خلفية Canvas المتحركة -->
+    <canvas id="canvas-bg"></canvas>
 
+    <!-- جسيمات متحركة -->
+    <div class="particles-container" id="particles"></div>
+
+    <!-- توهجات ضوئية -->
+    <div class="glow-orb glow-1"></div>
+    <div class="glow-orb glow-2"></div>
+    <div class="glow-orb glow-3"></div>
+
+    <!-- خطوط الشبكة -->
+    <div class="grid-lines"></div>
+
+    <!-- بطاقة تسجيل الدخول -->
     <div class="login-container">
-        <!-- الشعار والأيقونة -->
+        <!-- الشعار والصورة -->
         <div class="logo-section">
-            <div class="rocket-icon">🚀</div>
-            <div class="logo-text">BRO HOST</div>
+            <div class="avatar-wrapper">
+                <img src="/avatar.png" alt="OMAR BRO" class="avatar-img" onerror="this.style.display='none'; document.querySelector('.fallback-icon').style.display='block';">
+                <div class="fallback-icon" style="display:none; font-size:80px; line-height:1;">🚀</div>
+                <div class="avatar-ring"></div>
+            </div>
+            <div class="logo-text">OMAR BRO HOST</div>
             <div class="tagline">لوحة تحكم احترافية للاستضافة</div>
         </div>
 
+        <!-- رسالة الخطأ -->
+        <div class="error-msg" id="errorMsg">❌ بيانات الدخول غير صحيحة!</div>
+
         <!-- نموذج تسجيل الدخول -->
         <form onsubmit="login(event)">
-            <!-- حقل اسم المستخدم -->
             <div class="form-group">
                 <label>اسم المستخدم</label>
                 <div class="input-wrapper">
+                    <input type="text" id="username" class="form-control" placeholder="أدخل اسم المستخدم" required autocomplete="username">
                     <i class="fas fa-user input-icon"></i>
-                    <input type="text" id="username" class="form-control" placeholder="أدخل اسم المستخدم" required>
                 </div>
             </div>
 
-            <!-- حقل كلمة المرور -->
             <div class="form-group">
                 <label>كلمة المرور</label>
                 <div class="input-wrapper">
+                    <input type="password" id="password" class="form-control" placeholder="أدخل كلمة المرور" required autocomplete="current-password">
                     <i class="fas fa-lock input-icon"></i>
-                    <input type="password" id="password" class="form-control" placeholder="أدخل كلمة المرور" required>
+                    <button type="button" class="toggle-pass" id="toggleBtn" onclick="togglePassword()">
+                        <i class="fas fa-eye" id="eyeIcon"></i>
+                    </button>
                 </div>
             </div>
 
-            <!-- خيار التذكر -->
-            <div class="remember-group">
+            <label class="remember-group">
                 <input type="checkbox" id="remember">
                 <div class="checkbox-custom"></div>
-                <label for="remember" class="remember-label">تذكري لمدة 30 يوماً</label>
-            </div>
+                <span class="remember-label">تذكرني لمدة 30 يوماً</span>
+            </label>
 
-            <!-- زر الدخول -->
-            <button type="submit" class="btn-login">دخول إلى لوحة التحكم</button>
+            <button type="submit" class="btn-login" id="loginBtn">
+                🚀 دخول إلى النظام
+            </button>
 
-            <!-- زر المطور -->
             <a href="https://t.me/RLH55" target="_blank" class="dev-btn">
                 <i class="fab fa-telegram-plane"></i> المطور @RLH55
             </a>
         </form>
 
-        <!-- الحقوق -->
         <div class="footer">
-            <div class="copyright">© 2026 حقوق OMAR محفوظة</div>
-            <div class="version">BRO HOST v2.0 · اتصال آمن ومشفر 🔒</div>
+            <div class="copyright">©OMAR 2026</div>
+            <div class="version">مطور بواسطة OMAR · آمن ومشفر 🔒</div>
         </div>
     </div>
 
     <script>
-        // إنشاء النجوم المتحركة
-        function createStars() {
-            const container = document.getElementById('stars');
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                const size = Math.random() * 2.5;
-                star.style.width = size + 'px';
-                star.style.height = size + 'px';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
-                container.appendChild(star);
+        // ===== خلفية Canvas المتحركة =====
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // نجوم متحركة على Canvas
+        const stars = [];
+        for (let i = 0; i < 200; i++) {
+            stars.push({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                r: Math.random() * 1.5 + 0.3,
+                alpha: Math.random(),
+                speed: Math.random() * 0.008 + 0.002,
+                twinkleSpeed: Math.random() * 0.02 + 0.005
+            });
+        }
+
+        // خطوط متحركة (شبكة عصبية)
+        const nodes = [];
+        for (let i = 0; i < 40; i++) {
+            nodes.push({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5
+            });
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // خلفية متدرجة
+            const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            grad.addColorStop(0, '#050816');
+            grad.addColorStop(0.5, '#0a0e27');
+            grad.addColorStop(1, '#050816');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // رسم النجوم
+            stars.forEach(s => {
+                s.alpha += s.twinkleSpeed;
+                if (s.alpha > 1 || s.alpha < 0) s.twinkleSpeed *= -1;
+
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${Math.abs(s.alpha)})`;
+                ctx.fill();
+            });
+
+            // تحريك النقاط ورسم الخطوط
+            nodes.forEach(n => {
+                n.x += n.vx;
+                n.y += n.vy;
+                if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
+                if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+            });
+
+            // خطوط الشبكة العصبية
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[i].x, nodes[i].y);
+                        ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.strokeStyle = `rgba(0, 210, 255, ${0.12 * (1 - dist / 150)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // نقاط الشبكة
+            nodes.forEach(n => {
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, 1.5, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 210, 255, 0.4)';
+                ctx.fill();
+            });
+
+            requestAnimationFrame(drawCanvas);
+        }
+        drawCanvas();
+
+        // ===== جسيمات متحركة =====
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#00d2ff', '#3a7bd5', '#ff00d2', '#00ff88', '#ffffff'];
+
+            for (let i = 0; i < 25; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                const size = Math.random() * 4 + 1;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const duration = Math.random() * 15 + 10;
+                const delay = Math.random() * 15;
+                const left = Math.random() * 100;
+
+                p.style.cssText = `
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: ${color};
+                    left: ${left}%;
+                    bottom: -10px;
+                    animation-duration: ${duration}s;
+                    animation-delay: ${delay}s;
+                    box-shadow: 0 0 ${size * 3}px ${color};
+                    opacity: 0;
+                `;
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        // ===== وظائف تسجيل الدخول =====
+        function togglePassword() {
+            const pass = document.getElementById('password');
+            const icon = document.getElementById('eyeIcon');
+            if (pass.type === 'password') {
+                pass.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                pass.type = 'password';
+                icon.className = 'fas fa-eye';
             }
         }
 
-        // تسجيل الدخول
         async function login(event) {
             event.preventDefault();
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const remember = document.getElementById('remember').checked;
+            const btn = document.getElementById('loginBtn');
+            const errorMsg = document.getElementById('errorMsg');
+
+            errorMsg.style.display = 'none';
+            btn.classList.add('loading');
+            btn.textContent = '';
 
             try {
                 const res = await fetch('/login', {
@@ -450,30 +730,38 @@
                 if (res.ok) {
                     const data = await res.json();
                     if (data.status === 'success') {
-                        // تأثير النجاح
-                        document.querySelector('.login-container').style.animation = 'slideUp 0.5s reverse';
+                        btn.style.background = 'linear-gradient(135deg, #00ff88, #00d2ff)';
+                        btn.textContent = '✅ جاري الدخول...';
                         setTimeout(() => {
                             window.location.href = '/';
-                        }, 500);
+                        }, 800);
+                    } else {
+                        showError(data.message || 'بيانات الدخول غير صحيحة');
                     }
                 } else {
-                    alert('❌ خطأ في بيانات الدخول!');
+                    showError('❌ بيانات الدخول غير صحيحة!');
                 }
             } catch (e) {
-                alert('❌ خطأ في الاتصال بالسيرفر');
+                showError('❌ خطأ في الاتصال بالسيرفر');
             }
         }
 
-        // دعم مفتاح Enter
+        function showError(msg) {
+            const btn = document.getElementById('loginBtn');
+            const errorMsg = document.getElementById('errorMsg');
+            btn.classList.remove('loading');
+            btn.textContent = '🚀 دخول إلى النظام';
+            errorMsg.textContent = msg;
+            errorMsg.style.display = 'block';
+            setTimeout(() => { errorMsg.style.display = 'none'; }, 4000);
+        }
+
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 const form = document.querySelector('form');
                 form.dispatchEvent(new Event('submit'));
             }
         });
-
-        // تهيئة الصفحة
-        createStars();
     </script>
 </body>
 </html>

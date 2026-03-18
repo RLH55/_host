@@ -1,13 +1,17 @@
 services:
   - type: web
-    name: bro-host2
+    name: bro-host
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --timeout 600
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --timeout 600 --keep-alive 5
+    healthCheckPath: /health
     envVars:
       - key: SECRET_KEY
         generateValue: true
       - key: PYTHON_VERSION
         value: 3.11.0
       - key: RENDER_EXTERNAL_URL
-        fromContext: RENDER_EXTERNAL_URL
+        fromService:
+          type: web
+          name: bro-host
+          property: host
