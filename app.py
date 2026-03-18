@@ -671,9 +671,9 @@ def api_server_action():
             running_procs[username] = {}
 
         if startup_file.endswith('.py'):
-            cmd = [sys.executable, startup_file]
+            cmd = [sys.executable, full_path]
         elif startup_file.endswith('.js'):
-            cmd = ['node', startup_file]
+            cmd = ['node', full_path]
         elif startup_file.endswith('.php'):
             # التحقق من وجود PHP
             php_bin = shutil.which('php')
