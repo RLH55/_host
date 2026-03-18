@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMAR BRO HOST — تسجيل الدخول</title>
+    <title>BRO-Host | تسجيل الدخول</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -12,115 +12,38 @@
             --secondary: #3a7bd5;
             --accent: #ff00d2;
             --bg-dark: #050816;
-            --card-bg: rgba(10, 14, 39, 0.92);
             --text: #ffffff;
-            --border: rgba(0, 210, 255, 0.4);
-            --border-light: rgba(0, 210, 255, 0.15);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* ===== خلفية متحركة أسطورية ===== */
-        #canvas-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
+        html, body {
             width: 100%;
             height: 100%;
-            z-index: 0;
+            background-color: var(--bg-dark);
+            color: var(--text);
+            font-family: 'Cairo', sans-serif;
+            overflow: hidden;
         }
 
-        .particles-container {
+        #canvas-bg {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            z-index: 1;
-            overflow: hidden;
+            z-index: 0;
         }
 
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            animation: floatParticle linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes floatParticle {
-            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
-        }
-
-        .glow-orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .glow-1 {
-            width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.25) 0%, transparent 70%);
-            top: -200px; right: -200px;
-            animation: moveGlow1 18s infinite ease-in-out;
-        }
-
-        .glow-2 {
-            width: 500px; height: 500px;
-            background: radial-gradient(circle, rgba(58, 123, 213, 0.2) 0%, transparent 70%);
-            bottom: -200px; left: -200px;
-            animation: moveGlow2 22s infinite ease-in-out;
-        }
-
-        .glow-3 {
-            width: 300px; height: 300px;
-            background: radial-gradient(circle, rgba(255, 0, 210, 0.15) 0%, transparent 70%);
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            animation: pulse3 8s infinite ease-in-out;
-        }
-
-        @keyframes moveGlow1 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(-80px, 60px) scale(1.1); }
-            66% { transform: translate(40px, -40px) scale(0.9); }
-        }
-
-        @keyframes moveGlow2 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(80px, -60px) scale(1.1); }
-            66% { transform: translate(-40px, 40px) scale(0.9); }
-        }
-
-        @keyframes pulse3 {
-            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.3); }
-        }
-
-        /* خطوط الشبكة المتحركة */
         .grid-lines {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
             z-index: 1;
             background-image:
-                linear-gradient(rgba(0, 210, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 210, 255, 0.03) 1px, transparent 1px);
+                linear-gradient(rgba(0, 210, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 210, 255, 0.025) 1px, transparent 1px);
             background-size: 60px 60px;
             animation: gridMove 20s linear infinite;
+            pointer-events: none;
         }
 
         @keyframes gridMove {
@@ -128,131 +51,131 @@
             100% { background-position: 60px 60px; }
         }
 
-         /* ===== البطاقة الرئيسية =====
-        .login-container {
-            background: var(--card-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--border);
-            border-radius: 30px;
-            padding: 60px 50px;
-            width: 95%;
-            max-width: 600px;x;
-            box-shadow:
-                0 30px 80px rgba(0, 0, 0, 0.7),
-                0 0 60px rgba(0, 210, 255, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            animation: slideUp 0.9s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            z-index: 10;
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            z-index: 2;
+            pointer-events: none;
         }
 
-        /* خط متوهج علوي */
-        .login-container::before {
-            content: '';
+        .glow-1 { width: 400px; height: 400px; background: #00d2ff; top: -100px; left: -100px; }
+        .glow-2 { width: 350px; height: 350px; background: #ff00d2; bottom: -50px; right: -50px; }
+        .glow-3 { width: 300px; height: 300px; background: #3a7bd5; top: 50%; left: 50%; }
+
+        .particles-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .particle {
             position: absolute;
-            top: 0; left: 20%; right: 20%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary), var(--accent), var(--primary), transparent);
-            border-radius: 2px;
-            animation: scanLine 3s linear infinite;
+            border-radius: 50%;
+            animation: float-up 20s infinite ease-in;
         }
 
-        @keyframes scanLine {
-            0% { opacity: 0.3; }
-            50% { opacity: 1; }
-            100% { opacity: 0.3; }
+        @keyframes float-up {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(60px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        .login-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 95%;
+            max-width: 500px;
+            background: rgba(10, 14, 39, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: 30px;
+            padding: 50px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 50px rgba(0, 210, 255, 0.2);
+            z-index: 100;
         }
 
-        /* ===== قسم الشعار ===== */
         .logo-section {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 40px;
         }
 
-        /* صورة البروفايل */
         .avatar-wrapper {
             position: relative;
-            display: inline-block;
-            margin-bottom: 18px;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
         }
 
         .avatar-img {
-            width: 90px;
-            height: 90px;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             object-fit: cover;
             border: 3px solid var(--primary);
-            box-shadow:
-                0 0 20px rgba(0, 210, 255, 0.5),
-                0 0 40px rgba(0, 210, 255, 0.3),
-                0 0 60px rgba(0, 210, 255, 0.1);
-            animation: avatarFloat 4s ease-in-out infinite;
-            display: block;
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.5);
         }
 
-        @keyframes avatarFloat {
-            0%, 100% { transform: translateY(0px); box-shadow: 0 0 20px rgba(0, 210, 255, 0.5), 0 0 40px rgba(0, 210, 255, 0.3); }
-            50% { transform: translateY(-8px); box-shadow: 0 0 30px rgba(0, 210, 255, 0.7), 0 0 60px rgba(0, 210, 255, 0.4); }
-        }
-
-        /* حلقة دوارة حول الصورة */
         .avatar-ring {
             position: absolute;
-            top: -6px; left: -6px;
-            width: calc(100% + 12px);
-            height: calc(100% + 12px);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 110px;
+            height: 110px;
+            border: 2px solid var(--primary);
             border-radius: 50%;
-            border: 2px solid transparent;
-            border-top-color: var(--primary);
-            border-right-color: var(--accent);
-            animation: spinRing 3s linear infinite;
+            animation: spin 3s linear infinite;
+            opacity: 0.3;
         }
 
-        @keyframes spinRing {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
         .logo-text {
-            font-size: 42px;
+            font-size: 32px;
             font-weight: 900;
-            background: linear-gradient(135deg, var(--primary), #ffffff, var(--secondary));
+            background: linear-gradient(to left, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: 3px;
             margin-bottom: 8px;
-            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .tagline {
             font-size: 14px;
-            opacity: 0.6;
-            color: var(--text);
-            font-weight: 400;
-            letter-spacing: 1px;
+            opacity: 0.7;
+            color: var(--primary);
         }
 
-        /* ===== حقول الإدخال ===== */
+        .error-msg {
+            background: rgba(255, 65, 108, 0.15);
+            border: 1px solid rgba(255, 65, 108, 0.4);
+            color: #ff416c;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+            text-align: center;
+        }
+
         .form-group {
-            margin-bottom: 28px;
-            position: relative;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 12px;
-            font-size: 15px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            opacity: 0.8;
             font-weight: 600;
-            opacity: 0.85;
-            letter-spacing: 0.5px;
-            color: var(--primary);
         }
 
         .input-wrapper {
@@ -263,104 +186,65 @@
 
         .form-control {
             width: 100%;
-            padding: 18px 20px 18px 55px;
-            background: rgba(255, 255, 255, 0.04);
+            padding: 14px 16px 14px 40px;
+            background: rgba(255, 255, 255, 0.05);
             border: 1.5px solid rgba(0, 210, 255, 0.2);
-            border-radius: 14px;
+            border-radius: 12px;
             color: var(--text);
-            font-size: 16px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 15px;
+            transition: all 0.3s;
             font-family: 'Cairo', sans-serif;
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            background: rgba(0, 210, 255, 0.07);
-            box-shadow: 0 0 25px rgba(0, 210, 255, 0.25), inset 0 0 15px rgba(0, 210, 255, 0.05);
-        }
-
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.35);
+            background: rgba(0, 210, 255, 0.08);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
         }
 
         .input-icon {
             position: absolute;
-            left: 18px;
+            left: 14px;
             color: var(--primary);
-            font-size: 17px;
+            opacity: 0.6;
             pointer-events: none;
+        }
+
+        .toggle-pass {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 5px;
             transition: all 0.3s;
         }
 
-        .form-control:focus ~ .input-icon {
-            color: var(--accent);
+        .toggle-pass:hover {
+            opacity: 1;
             transform: scale(1.1);
         }
 
-        /* زر إظهار/إخفاء كلمة المرور */
-        .toggle-pass {
-            position: absolute;
-            right: 15px;
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            font-size: 16px;
-            transition: color 0.3s;
-            padding: 5px;
-        }
-
-        .toggle-pass:hover { color: var(--primary); }
-
-        /* خيار التذكر */
         .remember-group {
             display: flex;
             align-items: center;
-            margin-bottom: 28px;
-            gap: 12px;
+            gap: 10px;
+            margin-bottom: 25px;
             cursor: pointer;
-        }
-
-        .remember-group input[type="checkbox"] {
-            display: none;
-        }
-
-        .checkbox-custom {
-            width: 22px;
-            height: 22px;
-            border: 2px solid rgba(0, 210, 255, 0.4);
-            border-radius: 7px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            background: transparent;
-            flex-shrink: 0;
-        }
-
-        .remember-group input[type="checkbox"]:checked + .checkbox-custom {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            border-color: var(--primary);
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
-        }
-
-        .remember-group input[type="checkbox"]:checked + .checkbox-custom::after {
-            content: '✓';
-            color: white;
-            font-weight: bold;
             font-size: 14px;
+            opacity: 0.8;
         }
 
-        .remember-label {
-            font-size: 14px;
-            opacity: 0.7;
+        .remember-group input {
+            width: 18px;
+            height: 18px;
             cursor: pointer;
-            user-select: none;
+            accent-color: var(--primary);
         }
 
-        /* ===== زر الدخول ===== */
         .btn-login {
             width: 100%;
             padding: 16px;
@@ -380,13 +264,18 @@
             box-shadow: 0 10px 35px rgba(0, 210, 255, 0.35);
         }
 
-        .btn-login:hover {
+        .btn-login:hover:not(:disabled) {
             transform: translateY(-3px);
             box-shadow: 0 18px 45px rgba(0, 210, 255, 0.55);
         }
 
-        .btn-login:active {
+        .btn-login:active:not(:disabled) {
             transform: translateY(-1px);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.8;
+            cursor: not-allowed;
         }
 
         .btn-login::before {
@@ -398,9 +287,8 @@
             transition: 0.6s;
         }
 
-        .btn-login:hover::before { left: 100%; }
+        .btn-login:hover:not(:disabled)::before { left: 100%; }
 
-        /* زر المطور */
         .dev-btn {
             width: 100%;
             padding: 13px;
@@ -447,106 +335,40 @@
             transform: rotate(15deg) scale(1.1);
         }
 
-        .dev-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(42, 171, 238, 0.1), transparent);
-            transition: 0.5s;
-        }
-
-        .dev-btn:hover::before { left: 100%; }
-
-        /* الحقوق */
         .footer {
             text-align: center;
             margin-top: 30px;
-            padding-top: 25px;
-            border-top: 1px solid rgba(0, 210, 255, 0.1);
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 210, 255, 0.2);
+            font-size: 12px;
+            opacity: 0.6;
         }
 
         .copyright {
-            font-size: 12px;
-            opacity: 0.45;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
 
         .version {
             font-size: 11px;
-            opacity: 0.35;
-            color: var(--primary);
-        }
-
-        /* رسالة الخطأ */
-        .error-msg {
-            background: rgba(255, 65, 108, 0.15);
-            border: 1px solid rgba(255, 65, 108, 0.4);
-            border-radius: 10px;
-            padding: 12px 15px;
-            font-size: 14px;
-            color: #ff6b8a;
-            margin-bottom: 20px;
-            display: none;
-            text-align: center;
-            animation: shake 0.4s ease-in-out;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-8px); }
-            75% { transform: translateX(8px); }
-        }
-
-        /* حالة التحميل */
-        .btn-login.loading {
-            pointer-events: none;
-            opacity: 0.8;
-        }
-
-        .btn-login.loading::after {
-            content: '';
-            display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-right: 10px;
-            vertical-align: middle;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            opacity: 0.5;
         }
 
         @media (max-width: 600px) {
-            .login-container { padding: 35px 22px; }
+            .login-container { padding: 35px 22px; width: 90%; }
             .logo-text { font-size: 28px; }
             .avatar-img { width: 75px; height: 75px; }
         }
     </style>
 </head>
 <body>
-    <!-- خلفية Canvas المتحركة -->
     <canvas id="canvas-bg"></canvas>
-
-    <!-- جسيمات متحركة -->
-    <div class="particles-container" id="particles"></div>
-
-    <!-- توهجات ضوئية -->
+    <div class="grid-lines"></div>
     <div class="glow-orb glow-1"></div>
     <div class="glow-orb glow-2"></div>
     <div class="glow-orb glow-3"></div>
+    <div class="particles-container" id="particles"></div>
 
-    <!-- خطوط الشبكة -->
-    <div class="grid-lines"></div>
-
-    <!-- بطاقة تسجيل الدخول -->
     <div class="login-container">
-        <!-- الشعار والصورة -->
         <div class="logo-section">
             <div class="avatar-wrapper">
                 <img src="avatar.png" alt="OMAR BRO" class="avatar-img" onerror="this.style.display='none'; document.querySelector('.fallback-icon').style.display='block';">
@@ -557,11 +379,9 @@
             <div class="tagline">لوحة تحكم احترافية للاستضافة</div>
         </div>
 
-        <!-- رسالة الخطأ -->
-        <div class="error-msg" id="errorMsg">❌ بيانات الدخول غير صحيحة!</div>
+        <div class="error-msg" id="errorMsg"></div>
 
-        <!-- نموذج تسجيل الدخول -->
-        <form onsubmit="login(event)">
+        <form id="loginForm">
             <div class="form-group">
                 <label>اسم المستخدم</label>
                 <div class="input-wrapper">
@@ -575,7 +395,7 @@
                 <div class="input-wrapper">
                     <input type="password" id="password" class="form-control" placeholder="أدخل كلمة المرور" required autocomplete="new-password">
                     <i class="fas fa-lock input-icon"></i>
-                    <button type="button" class="toggle-pass" id="toggleBtn" onclick="togglePassword()">
+                    <button type="button" class="toggle-pass" onclick="togglePassword()">
                         <i class="fas fa-eye" id="eyeIcon"></i>
                     </button>
                 </div>
@@ -583,8 +403,7 @@
 
             <label class="remember-group">
                 <input type="checkbox" id="remember">
-                <div class="checkbox-custom"></div>
-                <span class="remember-label">تذكرني لمدة 30 يوماً</span>
+                <span>تذكرني لمدة 30 يوماً</span>
             </label>
 
             <button type="submit" class="btn-login" id="loginBtn">
@@ -604,7 +423,7 @@
     </div>
 
     <script>
-        // ===== خلفية Canvas المتحركة =====
+        // Canvas Background
         const canvas = document.getElementById('canvas-bg');
         const ctx = canvas.getContext('2d');
 
@@ -615,7 +434,6 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
-        // نجوم متحركة على Canvas
         const stars = [];
         for (let i = 0; i < 200; i++) {
             stars.push({
@@ -628,7 +446,6 @@
             });
         }
 
-        // خطوط متحركة (شبكة عصبية)
         const nodes = [];
         for (let i = 0; i < 40; i++) {
             nodes.push({
@@ -642,7 +459,6 @@
         function drawCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // خلفية متدرجة
             const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
             grad.addColorStop(0, '#050816');
             grad.addColorStop(0.5, '#0a0e27');
@@ -650,18 +466,15 @@
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // رسم النجوم
             stars.forEach(s => {
                 s.alpha += s.twinkleSpeed;
                 if (s.alpha > 1 || s.alpha < 0) s.twinkleSpeed *= -1;
-
                 ctx.beginPath();
                 ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
                 ctx.fillStyle = `rgba(255, 255, 255, ${Math.abs(s.alpha)})`;
                 ctx.fill();
             });
 
-            // تحريك النقاط ورسم الخطوط
             nodes.forEach(n => {
                 n.x += n.vx;
                 n.y += n.vy;
@@ -669,7 +482,6 @@
                 if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
             });
 
-            // خطوط الشبكة العصبية
             for (let i = 0; i < nodes.length; i++) {
                 for (let j = i + 1; j < nodes.length; j++) {
                     const dx = nodes[i].x - nodes[j].x;
@@ -686,7 +498,6 @@
                 }
             }
 
-            // نقاط الشبكة
             nodes.forEach(n => {
                 ctx.beginPath();
                 ctx.arc(n.x, n.y, 1.5, 0, Math.PI * 2);
@@ -698,7 +509,7 @@
         }
         drawCanvas();
 
-        // ===== جسيمات متحركة =====
+        // Particles
         function createParticles() {
             const container = document.getElementById('particles');
             const colors = ['#00d2ff', '#3a7bd5', '#ff00d2', '#00ff88', '#ffffff'];
@@ -728,7 +539,7 @@
         }
         createParticles();
 
-        // ===== وظائف تسجيل الدخول =====
+        // Login Functions
         function togglePassword() {
             const pass = document.getElementById('password');
             const icon = document.getElementById('eyeIcon');
@@ -741,17 +552,41 @@
             }
         }
 
-        async function login(event) {
-            event.preventDefault();
+        function showError(msg) {
+            const btn = document.getElementById('loginBtn');
+            const errorMsg = document.getElementById('errorMsg');
+            if (btn) {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                btn.textContent = '🚀 دخول إلى النظام';
+            }
+            if (errorMsg) {
+                errorMsg.textContent = msg;
+                errorMsg.style.display = 'block';
+                setTimeout(() => { errorMsg.style.display = 'none'; }, 4000);
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const remember = document.getElementById('remember').checked;
             const btn = document.getElementById('loginBtn');
             const errorMsg = document.getElementById('errorMsg');
 
-            errorMsg.style.display = 'none';
-            btn.classList.add('loading');
-            btn.textContent = '';
+            if (!username || !password) {
+                showError('❌ يرجى إدخال اسم المستخدم وكلمة المرور');
+                return;
+            }
+
+            if (errorMsg) errorMsg.style.display = 'none';
+            if (btn) {
+                btn.disabled = true;
+                btn.classList.add('loading');
+                btn.textContent = '⏳ جاري التحقق...';
+            }
 
             try {
                 const res = await fetch('/login', {
@@ -760,39 +595,35 @@
                     body: JSON.stringify({username, password, remember_me: remember})
                 });
 
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.status === 'success') {
+                const data = await res.json();
+
+                if (res.ok && data.status === 'success') {
+                    if (btn) {
                         btn.style.background = 'linear-gradient(135deg, #00ff88, #00d2ff)';
                         btn.textContent = '✅ جاري الدخول...';
-                        setTimeout(() => {
-                            window.location.href = '/';
-                        }, 800);
-                    } else {
-                        showError(data.message || 'بيانات الدخول غير صحيحة');
                     }
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 800);
                 } else {
-                    showError('❌ بيانات الدخول غير صحيحة!');
+                    showError(data.message || '❌ بيانات الدخول غير صحيحة!');
                 }
             } catch (e) {
-                showError('❌ خطأ في الاتصال بالسيرفر');
+                showError('❌ خطأ في الاتصال بالسيرفر: ' + e.message);
             }
         }
 
-        function showError(msg) {
-            const btn = document.getElementById('loginBtn');
-            const errorMsg = document.getElementById('errorMsg');
-            btn.classList.remove('loading');
-            btn.textContent = '🚀 دخول إلى النظام';
-            errorMsg.textContent = msg;
-            errorMsg.style.display = 'block';
-            setTimeout(() => { errorMsg.style.display = 'none'; }, 4000);
+        // Attach form submission
+        const form = document.getElementById('loginForm');
+        if (form) {
+            form.addEventListener('submit', handleLogin);
         }
 
+        // Enter key support
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                const form = document.querySelector('form');
-                form.dispatchEvent(new Event('submit'));
+                const form = document.getElementById('loginForm');
+                if (form) form.dispatchEvent(new Event('submit'));
             }
         });
     </script>
