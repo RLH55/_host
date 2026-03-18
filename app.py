@@ -284,6 +284,49 @@ def logout():
 
 # ============== Admin APIs ==============
 
+@app.route("/api/admin/stats", methods=['GET'])
+def admin_get_stats():
+    if 'username' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    with open(USERS_FILE, "r", encoding="utf-8") as f:
+        users = json.load(f)
+        
+    if not users.get(session['username'], {}).get('is_admin'):
+        return jsonify({"error": "Forbidden"}), 403
+
+    total_users = len(users)
+    active_servers = 0
+    total_servers = 0
+    
+    for user in users:
+        user_dir = get_user_servers_dir(user)
+        if os.path.exists(user_dir):
+            user_servers = [d for d in os.listdir(user_dir) if os.path.isdir(os.path.join(user_dir, d))]
+            total_servers += len(user_servers)
+            
+        if user in running_procs:
+            for srv in running_procs[user].values():
+                if srv.get('status') == 'running':
+                    active_servers += 1
+
+    # إحصائيات النظام
+    cpu_usage = psutil.cpu_percent()
+    ram_usage = psutil.virtual_memory().percent
+    disk_usage = psutil.disk_usage('/').percent
+
+    return jsonify({
+        "total_users": total_users,
+        "total_servers": total_servers,
+        "active_servers": active_servers,
+        "system": {
+            "cpu": cpu_usage,
+            "ram": ram_usage,
+            "disk": disk_usage
+        },
+        "users": users
+    })
+
 @app.route("/api/admin/users", methods=['GET'])
 def admin_get_users():
     if 'username' not in session:
