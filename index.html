@@ -11,161 +11,572 @@
             --primary: #00d2ff;
             --secondary: #3a7bd5;
             --accent: #ff00d2;
-            --bg-dark: #050505;
-            --card-bg: rgba(20, 20, 20, 0.8);
+            --bg-dark: #0a0e27;
+            --card-bg: rgba(15, 20, 40, 0.95);
             --text: #ffffff;
-            --border: rgba(0, 210, 255, 0.3);
+            --border: rgba(0, 210, 255, 0.4);
+            --border-light: rgba(0, 210, 255, 0.15);
         }
 
         * {
-            margin: 0; padding: 0; box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: 'Cairo', sans-serif;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
             background-color: var(--bg-dark);
             color: var(--text);
             overflow-x: hidden;
-            min-height: 100vh;
         }
 
-        /* خلفية متحركة */
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* خلفية متحركة أسطورية */
         .animated-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: radial-gradient(circle at center, #101010 0%, #050505 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1428 100%);
         }
 
-        .stars { position: absolute; width: 100%; height: 100%; }
-        .star {
-            position: absolute; background: white; border-radius: 50%; opacity: 0.5;
-            animation: twinkle var(--duration) infinite ease-in-out;
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
         }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
         @keyframes twinkle {
             0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.2); }
+            50% { opacity: 1; transform: scale(1.3); }
         }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.3;
+        }
+
+        .glow-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(0, 210, 255, 0.3);
+            top: -100px;
+            right: -100px;
+            animation: moveGlow1 20s infinite ease-in-out;
+        }
+
+        .glow-2 {
+            width: 300px;
+            height: 300px;
+            background: rgba(58, 123, 213, 0.2);
+            bottom: -100px;
+            left: -100px;
+            animation: moveGlow2 25s infinite ease-in-out;
+        }
+
+        @keyframes moveGlow1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-50px, 50px); }
+        }
+
+        @keyframes moveGlow2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(50px, -50px); }
+        }
+
+        /* الحاوية الرئيسية */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            flex: 1;
+            position: relative;
+            z-index: 10;
+        }
 
         header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 0; margin-bottom: 30px; border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .logo {
-            font-size: 28px; font-weight: 900;
-            background: linear-gradient(to left, var(--primary), var(--accent));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(to left, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
         }
 
         .btn {
-            padding: 10px 20px; border-radius: 12px; border: none; cursor: pointer;
-            font-weight: bold; transition: 0.3s; display: flex; align-items: center; gap: 10px;
-            color: white; text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: white;
+            font-family: 'Cairo', sans-serif;
+            font-size: 15px;
         }
 
-        .btn-primary { background: linear-gradient(45deg, var(--primary), var(--secondary)); }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4); }
-        .btn-danger { background: #ff416c; }
-        .btn-success { background: #00ff88; color: black; }
-        .btn-info { background: #0088cc; }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
+        }
 
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 210, 255, 0.5);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 65, 108, 0.4);
+        }
+
+        /* شبكة السيرفرات */
+        .servers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
 
         .server-card {
-            background: var(--card-bg); backdrop-filter: blur(10px);
-            border: 1px solid var(--border); border-radius: 20px; padding: 25px;
-            transition: 0.3s; position: relative; overflow: hidden;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 210, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
         }
 
-        .server-card:hover { border-color: var(--primary); transform: translateY(-5px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .server-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-8px);
+            box-shadow: 0 35px 80px rgba(0, 0, 0, 0.7), 0 0 60px rgba(0, 210, 255, 0.2);
+        }
+
+        .server-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .server-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+        }
 
         .status-badge {
-            position: absolute; top: 15px; left: 15px; padding: 5px 12px;
-            border-radius: 20px; font-size: 12px; font-weight: bold;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .status-running { background: rgba(0, 255, 136, 0.2); color: #00ff88; }
-        .status-offline { background: rgba(255, 65, 108, 0.2); color: #ff416c; }
+        .status-running {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
 
-        .server-title { font-size: 20px; font-weight: 700; margin: 30px 0 10px 0; }
+        .status-offline {
+            background: rgba(255, 65, 108, 0.2);
+            color: #ff416c;
+            border: 1px solid #ff416c;
+        }
 
+        .server-info {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-light);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            opacity: 0.8;
+        }
+
+        .info-label {
+            color: var(--primary);
+        }
+
+        /* أزرار التحكم */
         .server-actions {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        .server-actions .btn { padding: 10px; font-size: 13px; justify-content: center; }
-
-        .server-details {
-            background: rgba(255,255,255,0.05); border-radius: 12px; padding: 15px;
-            margin: 15px 0; font-size: 13px;
+        .action-btn {
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            font-family: 'Cairo', sans-serif;
         }
 
-        .detail-item { display: flex; justify-content: space-between; margin: 5px 0; }
+        .action-btn:hover {
+            background: rgba(0, 210, 255, 0.15);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
 
+        .action-btn.danger {
+            color: #ff416c;
+            border-color: #ff416c;
+        }
+
+        .action-btn.danger:hover {
+            background: rgba(255, 65, 108, 0.15);
+        }
+
+        .action-btn.success {
+            color: #00ff88;
+            border-color: #00ff88;
+        }
+
+        .action-btn.success:hover {
+            background: rgba(0, 255, 136, 0.15);
+        }
+
+        .action-btn.info {
+            color: #00d2ff;
+            border-color: #00d2ff;
+        }
+
+        .action-btn.info:hover {
+            background: rgba(0, 210, 255, 0.15);
+        }
+
+        .action-btn.proxy {
+            color: #9c27b0;
+            border-color: #9c27b0;
+            grid-column: 1 / -1;
+        }
+
+        .action-btn.proxy:hover {
+            background: rgba(156, 39, 176, 0.15);
+        }
+
+        /* الـ Modals */
         .modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
-            background: #151515; border: 1px solid var(--primary); border-radius: 25px;
-            padding: 40px; width: 90%; max-width: 500px; position: relative;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            padding: 40px;
+            width: 90%;
+            max-width: 550px;
+            position: relative;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+            animation: slideDown 0.3s ease-out;
         }
 
-        .modal-close { position: absolute; top: 15px; right: 15px; cursor: pointer; font-size: 24px; }
-
-        .dev-btn {
-            position: fixed; bottom: 30px; left: 30px;
-            background: rgba(0, 136, 204, 0.2); border: 1px solid #0088cc;
-            color: #0088cc; padding: 12px 20px; border-radius: 50px;
-            text-decoration: none; display: flex; align-items: center; gap: 10px;
-            font-weight: bold; backdrop-filter: blur(10px); z-index: 100;
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .file-list { max-height: 300px; overflow-y: auto; margin: 15px 0; }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 28px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+
+        .modal-close:hover {
+            opacity: 1;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0, 210, 255, 0.08);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .modal-buttons .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* قائمة الملفات */
+        .files-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+
         .file-item {
-            background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;
-            margin: 5px 0; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .file-name {
+            color: var(--primary);
+            word-break: break-all;
+        }
+
+        .file-size {
+            opacity: 0.6;
+            white-space: nowrap;
+            margin-right: 10px;
+        }
+
+        /* زر المطور */
+        .dev-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(0, 136, 204, 0.2);
+            border: 1px solid #0088cc;
+            color: #0088cc;
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            transition: all 0.3s;
+        }
+
+        .dev-btn:hover {
+            background: #0088cc;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 136, 204, 0.5);
+        }
+
+        /* الرسالة الفارغة */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
         }
 
         @media (max-width: 768px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
-            .server-actions { grid-template-columns: 1fr; }
+            .servers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .server-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 30px 20px;
+            }
+
+            .dev-btn {
+                bottom: 20px;
+                left: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="animated-bg" id="bg">
+    <div class="animated-bg">
+        <div class="glow-orb glow-1"></div>
+        <div class="glow-orb glow-2"></div>
         <div class="stars" id="stars"></div>
     </div>
 
     <div class="container">
         <header>
-            <span class="logo">BRO-Host2</span>
-            <div style="display:flex; gap:15px;">
+            <div class="logo-section">
+                <span class="logo">BRO HOST</span>
+            </div>
+            <div class="header-controls">
                 <button onclick="showCreateModal()" class="btn btn-primary">
                     <i class="fas fa-plus"></i> إنشاء سيرفر
                 </button>
-                <button onclick="logout()" class="btn btn-danger">خروج</button>
+                <button onclick="logout()" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> خروج
+                </button>
             </div>
         </header>
 
-        <div class="dashboard-grid" id="serverList">
-            <div style="grid-column:1/-1; text-align:center; opacity:0.5; padding:50px;">جاري تحميل السيرفرات...</div>
+        <div class="servers-grid" id="serversList">
+            <div class="empty-state">
+                <div class="empty-state-icon">⏳</div>
+                <p>جاري تحميل السيرفرات...</p>
+            </div>
         </div>
     </div>
 
     <!-- نافذة إنشاء سيرفر -->
     <div class="modal" id="createModal">
         <div class="modal-content">
-            <span class="modal-close" onclick="hideCreateModal()">×</span>
-            <h2 style="margin-bottom:20px; color:var(--primary)">إنشاء سيرفر جديد</h2>
-            <input type="text" id="serverName" placeholder="اسم السيرفر" 
-                   style="width:100%; padding:15px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; color:white; margin-bottom:20px;">
-            <div style="display:flex; gap:10px;">
-                <button onclick="createServer()" class="btn btn-primary" style="flex:1; justify-content:center;">إنشاء</button>
-                <button onclick="hideCreateModal()" class="btn" style="background:#333; flex:1; justify-content:center;">إلغاء</button>
+            <button class="modal-close" onclick="hideCreateModal()">×</button>
+            <div class="modal-title">إنشاء سيرفر جديد</div>
+            <div class="form-group">
+                <label>اسم السيرفر</label>
+                <input type="text" id="serverName" class="form-control" placeholder="مثال: my-bot-server">
+            </div>
+            <div class="modal-buttons">
+                <button onclick="createServer()" class="btn btn-primary">إنشاء</button>
+                <button onclick="hideCreateModal()" class="btn" style="background: #333;">إلغاء</button>
             </div>
         </div>
     </div>
@@ -173,31 +584,36 @@
     <!-- نافذة معلومات السيرفر -->
     <div class="modal" id="infoModal">
         <div class="modal-content">
-            <span class="modal-close" onclick="hideInfoModal()">×</span>
-            <h2 style="margin-bottom:20px; color:var(--primary)" id="infoTitle">معلومات السيرفر</h2>
+            <button class="modal-close" onclick="hideInfoModal()">×</button>
+            <div class="modal-title" id="infoTitle">معلومات السيرفر</div>
             <div id="infoContent"></div>
-            <button onclick="hideInfoModal()" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:20px;">إغلاق</button>
+            <button onclick="hideInfoModal()" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 20px;">إغلاق</button>
         </div>
     </div>
 
     <!-- نافذة رفع الملفات -->
     <div class="modal" id="uploadModal">
         <div class="modal-content">
-            <span class="modal-close" onclick="hideUploadModal()">×</span>
-            <h2 style="margin-bottom:20px; color:var(--primary)" id="uploadTitle">رفع ملفات</h2>
-            <input type="file" id="fileInput" multiple style="width:100%; padding:10px; margin-bottom:15px;">
-            <button onclick="uploadFiles()" class="btn btn-success" style="width:100%; justify-content:center;">رفع الملفات</button>
-            <button onclick="hideUploadModal()" class="btn" style="background:#333; width:100%; justify-content:center; margin-top:10px;">إلغاء</button>
+            <button class="modal-close" onclick="hideUploadModal()">×</button>
+            <div class="modal-title" id="uploadTitle">رفع ملفات</div>
+            <div class="form-group">
+                <label>اختر الملفات</label>
+                <input type="file" id="fileInput" class="form-control" multiple>
+            </div>
+            <div class="modal-buttons">
+                <button onclick="uploadFiles()" class="btn btn-primary">رفع</button>
+                <button onclick="hideUploadModal()" class="btn" style="background: #333;">إلغاء</button>
+            </div>
         </div>
     </div>
 
     <!-- نافذة البروكسي -->
     <div class="modal" id="proxyModal">
         <div class="modal-content">
-            <span class="modal-close" onclick="hideProxyModal()">×</span>
-            <h2 style="margin-bottom:20px; color:var(--primary)" id="proxyTitle">نظام البروكسي</h2>
+            <button class="modal-close" onclick="hideProxyModal()">×</button>
+            <div class="modal-title" id="proxyTitle">نظام البروكسي</div>
             <div id="proxyContent"></div>
-            <button onclick="hideProxyModal()" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:20px;">إغلاق</button>
+            <button onclick="hideProxyModal()" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 20px;">إغلاق</button>
         </div>
     </div>
 
@@ -210,101 +626,124 @@
 
         function createStars() {
             const container = document.getElementById('stars');
-            for(let i=0; i<100; i++) {
-                const s = document.createElement('div');
-                s.className = 'star';
-                s.style.width = s.style.height = Math.random()*3+'px';
-                s.style.top = Math.random()*100+'%';
-                s.style.left = Math.random()*100+'%';
-                s.style.setProperty('--duration', Math.random()*3+2+'s');
-                container.appendChild(s);
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 2.5;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                container.appendChild(star);
             }
         }
-        createStars();
 
-        function showCreateModal() { document.getElementById('createModal').style.display = 'flex'; }
-        function hideCreateModal() { document.getElementById('createModal').style.display = 'none'; }
-        function showInfoModal() { document.getElementById('infoModal').style.display = 'flex'; }
-        function hideInfoModal() { document.getElementById('infoModal').style.display = 'none'; }
-        function showUploadModal() { document.getElementById('uploadModal').style.display = 'flex'; }
-        function hideUploadModal() { document.getElementById('uploadModal').style.display = 'none'; }
-        function showProxyModal() { document.getElementById('proxyModal').style.display = 'flex'; }
-        function hideProxyModal() { document.getElementById('proxyModal').style.display = 'none'; }
+        function showModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function hideModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function showCreateModal() { showModal('createModal'); }
+        function hideCreateModal() { hideModal('createModal'); document.getElementById('serverName').value = ''; }
+        function showInfoModal() { showModal('infoModal'); }
+        function hideInfoModal() { hideModal('infoModal'); }
+        function showUploadModal() { showModal('uploadModal'); }
+        function hideUploadModal() { hideModal('uploadModal'); document.getElementById('fileInput').value = ''; }
+        function showProxyModal() { showModal('proxyModal'); }
+        function hideProxyModal() { hideModal('proxyModal'); }
 
         async function loadServers() {
-            const res = await fetch('/api/servers/list');
-            const servers = await res.json();
-            const list = document.getElementById('serverList');
-            list.innerHTML = '';
-            
-            if (servers.length === 0) {
-                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; opacity:0.5; padding:50px;">لا توجد سيرفرات بعد</div>';
-                return;
-            }
-            
-            servers.forEach(s => {
-                const card = document.createElement('div');
-                card.className = 'server-card';
-                card.innerHTML = `
-                    <div class="status-badge status-${s.status}">${s.status === 'running' ? '🟢 يعمل' : '🔴 متوقف'}</div>
-                    <h3 class="server-title">${s.name}</h3>
+            try {
+                const res = await fetch('/api/servers/list');
+                const servers = await res.json();
+                const list = document.getElementById('serversList');
+                list.innerHTML = '';
+
+                if (servers.length === 0) {
+                    list.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">📭</div><p>لا توجد سيرفرات بعد. اضغط "إنشاء سيرفر" للبدء!</p></div>';
+                    return;
+                }
+
+                servers.forEach(s => {
+                    const card = document.createElement('div');
+                    card.className = 'server-card';
+                    const isRunning = s.status === 'running';
                     
-                    <div class="server-details">
-                        <div class="detail-item">
-                            <span>الحالة:</span>
-                            <span style="color:${s.status === 'running' ? '#00ff88' : '#ff416c'}">${s.status === 'running' ? 'يعمل' : 'متوقف'}</span>
+                    card.innerHTML = `
+                        <div class="server-header">
+                            <div class="server-title">${s.name}</div>
+                            <div class="status-badge ${isRunning ? 'status-running' : 'status-offline'}">
+                                ${isRunning ? '<i class="fas fa-circle"></i> يعمل' : '<i class="fas fa-circle"></i> متوقف'}
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="server-actions">
-                        <button onclick="serverAction('${s.name}', '${s.status === 'running' ? 'stop' : 'start'}')" 
-                                class="btn" style="background:${s.status === 'running' ? '#ff416c' : '#00ff88'}; color:${s.status === 'running' ? 'white' : 'black'};">
-                            ${s.status === 'running' ? '⏹️ إيقاف' : '▶️ تشغيل'}
+
+                        <div class="server-info">
+                            <div class="info-item">
+                                <span class="info-label">الحالة:</span>
+                                <span>${isRunning ? '🟢 يعمل الآن' : '🔴 متوقف'}</span>
+                            </div>
+                        </div>
+
+                        <div class="server-actions">
+                            <button onclick="serverAction('${s.name}', '${isRunning ? 'stop' : 'start'}')" 
+                                    class="action-btn ${isRunning ? 'danger' : 'success'}">
+                                ${isRunning ? '<i class="fas fa-stop"></i> إيقاف' : '<i class="fas fa-play"></i> تشغيل'}
+                            </button>
+                            <button onclick="deleteServer('${s.name}')" class="action-btn danger">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </div>
+
+                        <div class="server-actions">
+                            <button onclick="showServerInfo('${s.name}')" class="action-btn info">
+                                <i class="fas fa-info-circle"></i> معلومات
+                            </button>
+                            <button onclick="showUploadUI('${s.name}')" class="action-btn success">
+                                <i class="fas fa-cloud-upload-alt"></i> رفع ملفات
+                            </button>
+                        </div>
+
+                        <button onclick="showProxyUI('${s.name}')" class="action-btn proxy">
+                            <i class="fas fa-network-wired"></i> البروكسي
                         </button>
-                        <button onclick="deleteServer('${s.name}')" class="btn btn-danger">🗑️ حذف</button>
-                    </div>
-                    
-                    <div class="server-actions">
-                        <button onclick="showServerInfo('${s.name}')" class="btn btn-info">ℹ️ معلومات</button>
-                        <button onclick="showUploadUI('${s.name}')" class="btn btn-success">📤 رفع</button>
-                    </div>
-                    
-                    <div class="server-actions">
-                        <button onclick="showProxyUI('${s.name}')" class="btn" style="background:#9c27b0; grid-column:1/-1;">🔀 البروكسي</button>
-                    </div>
-                `;
-                list.appendChild(card);
-            });
+                    `;
+                    list.appendChild(card);
+                });
+            } catch (e) {
+                console.error(e);
+            }
         }
 
         async function createServer() {
-            const name = document.getElementById('serverName').value;
+            const name = document.getElementById('serverName').value.trim();
             if (!name) { alert('أدخل اسم السيرفر'); return; }
-            
+
             const res = await fetch('/api/servers/create', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({name})
             });
-            if(res.ok) { 
-                hideCreateModal(); 
-                document.getElementById('serverName').value = '';
-                loadServers(); 
+
+            if (res.ok) {
+                hideCreateModal();
+                loadServers();
             } else {
                 const err = await res.json();
-                alert('خطأ: ' + err.error);
+                alert('خطأ: ' + (err.error || 'فشل إنشاء السيرفر'));
             }
         }
 
         async function deleteServer(name) {
             if (!confirm(`هل تريد حذف السيرفر "${name}"؟`)) return;
-            
+
             const res = await fetch('/api/servers/delete', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({name})
             });
-            if(res.ok) { loadServers(); }
+
+            if (res.ok) {
+                loadServers();
+            }
         }
 
         async function serverAction(name, action) {
@@ -313,29 +752,46 @@
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({name, action})
             });
-            loadServers();
+            setTimeout(loadServers, 500);
         }
 
         async function showServerInfo(name) {
             currentServer = name;
             const res = await fetch(`/api/servers/info/${name}`);
             const info = await res.json();
-            
-            let content = `<div class="server-details">
-                <div class="detail-item"><span>الحالة:</span><span>${info.status}</span></div>
-                <div class="detail-item"><span>عدد الملفات:</span><span>${info.file_count}</span></div>
-                <div class="detail-item"><span>الحجم الكلي:</span><span>${(info.total_size / 1024 / 1024).toFixed(2)} MB</span></div>
-            </div>
-            <h4 style="margin-top:20px; color:var(--primary)">الملفات:</h4>
-            <div class="file-list">`;
-            
-            info.files.forEach(f => {
-                content += `<div class="file-item">
-                    <span>${f.name}</span>
-                    <span>${(f.size / 1024).toFixed(2)} KB</span>
-                </div>`;
-            });
-            
+
+            let content = `
+                <div class="server-info">
+                    <div class="info-item">
+                        <span class="info-label">الحالة:</span>
+                        <span>${info.status === 'running' ? '🟢 يعمل' : '🔴 متوقف'}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">عدد الملفات:</span>
+                        <span>${info.file_count}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">الحجم الكلي:</span>
+                        <span>${(info.total_size / 1024 / 1024).toFixed(2)} MB</span>
+                    </div>
+                </div>
+                <h4 style="margin-top: 20px; color: var(--primary); margin-bottom: 15px;">الملفات:</h4>
+                <div class="files-list">
+            `;
+
+            if (info.files.length === 0) {
+                content += '<div style="text-align: center; opacity: 0.5; padding: 30px;">لا توجد ملفات</div>';
+            } else {
+                info.files.forEach(f => {
+                    content += `
+                        <div class="file-item">
+                            <span class="file-name"><i class="fas fa-file"></i> ${f.name}</span>
+                            <span class="file-size">${(f.size / 1024).toFixed(2)} KB</span>
+                        </div>
+                    `;
+                });
+            }
+
             content += '</div>';
             document.getElementById('infoContent').innerHTML = content;
             document.getElementById('infoTitle').textContent = `معلومات السيرفر: ${name}`;
@@ -351,17 +807,17 @@
         async function uploadFiles() {
             const files = document.getElementById('fileInput').files;
             if (files.length === 0) { alert('اختر ملفات'); return; }
-            
+
             for (let file of files) {
                 const formData = new FormData();
                 formData.append('file', file);
-                
+
                 await fetch(`/api/servers/upload/${currentServer}`, {
                     method: 'POST',
                     body: formData
                 });
             }
-            
+
             alert('تم رفع الملفات بنجاح!');
             hideUploadModal();
             loadServers();
@@ -370,23 +826,30 @@
         function showProxyUI(name) {
             currentServer = name;
             document.getElementById('proxyTitle').textContent = `البروكسي - ${name}`;
-            
-            let content = `<div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px;">
-                <p style="margin-bottom:15px; opacity:0.8;">استخدم هذا الرابط للوصول إلى السيرفر عبر البروكسي:</p>
-                <div style="background:rgba(0,210,255,0.1); padding:15px; border-radius:8px; border:1px solid var(--border); word-break:break-all;">
-                    <code>/proxy/&lt;PORT&gt;/&lt;PATH&gt;</code>
+
+            const content = `
+                <div class="server-info">
+                    <p style="margin-bottom: 15px; opacity: 0.8;">استخدم هذا الرابط للوصول إلى السيرفر عبر البروكسي:</p>
+                    <div style="background: rgba(0, 210, 255, 0.1); padding: 15px; border-radius: 8px; border: 1px solid var(--border); word-break: break-all; font-family: monospace;">
+                        <code>/proxy/&lt;PORT&gt;/&lt;PATH&gt;</code>
+                    </div>
+                    <p style="margin-top: 15px; font-size: 13px; opacity: 0.6;">
+                        <strong>مثال:</strong> <code>/proxy/8000/api/data</code>
+                    </p>
                 </div>
-                <p style="margin-top:15px; font-size:13px; opacity:0.6;">مثال: <code>/proxy/8000/api/data</code></p>
-            </div>`;
-            
+            `;
+
             document.getElementById('proxyContent').innerHTML = content;
             showProxyModal();
         }
 
-        function logout() { 
-            fetch('/api/logout', {method:'POST'}).then(()=>window.location.href='/login'); 
+        function logout() {
+            fetch('/api/logout', {method: 'POST'}).then(() => {
+                window.location.href = '/login';
+            });
         }
 
+        createStars();
         loadServers();
         setInterval(loadServers, 5000);
     </script>
