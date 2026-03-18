@@ -66,8 +66,11 @@
 
         .btn-primary { background: linear-gradient(45deg, var(--primary), var(--secondary)); }
         .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4); }
+        .btn-danger { background: #ff416c; }
+        .btn-success { background: #00ff88; color: black; }
+        .btn-info { background: #0088cc; }
 
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
 
         .server-card {
             background: var(--card-bg); backdrop-filter: blur(10px);
@@ -85,16 +88,21 @@
         .status-running { background: rgba(0, 255, 136, 0.2); color: #00ff88; }
         .status-offline { background: rgba(255, 65, 108, 0.2); color: #ff416c; }
 
-        /* زر المطور */
-        .dev-btn {
-            position: fixed; bottom: 30px; left: 30px;
-            background: rgba(0, 136, 204, 0.2); border: 1px solid #0088cc;
-            color: #0088cc; padding: 12px 20px; border-radius: 50px;
-            text-decoration: none; display: flex; align-items: center; gap: 10px;
-            font-weight: bold; backdrop-filter: blur(10px); z-index: 100;
+        .server-title { font-size: 20px; font-weight: 700; margin: 30px 0 10px 0; }
+
+        .server-actions {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;
         }
 
-        /* نافذة إنشاء سيرفر */
+        .server-actions .btn { padding: 10px; font-size: 13px; justify-content: center; }
+
+        .server-details {
+            background: rgba(255,255,255,0.05); border-radius: 12px; padding: 15px;
+            margin: 15px 0; font-size: 13px;
+        }
+
+        .detail-item { display: flex; justify-content: space-between; margin: 5px 0; }
+
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000;
@@ -103,6 +111,27 @@
         .modal-content {
             background: #151515; border: 1px solid var(--primary); border-radius: 25px;
             padding: 40px; width: 90%; max-width: 500px; position: relative;
+        }
+
+        .modal-close { position: absolute; top: 15px; right: 15px; cursor: pointer; font-size: 24px; }
+
+        .dev-btn {
+            position: fixed; bottom: 30px; left: 30px;
+            background: rgba(0, 136, 204, 0.2); border: 1px solid #0088cc;
+            color: #0088cc; padding: 12px 20px; border-radius: 50px;
+            text-decoration: none; display: flex; align-items: center; gap: 10px;
+            font-weight: bold; backdrop-filter: blur(10px); z-index: 100;
+        }
+
+        .file-list { max-height: 300px; overflow-y: auto; margin: 15px 0; }
+        .file-item {
+            background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;
+            margin: 5px 0; display: flex; justify-content: space-between; align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .server-actions { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -118,25 +147,57 @@
                 <button onclick="showCreateModal()" class="btn btn-primary">
                     <i class="fas fa-plus"></i> إنشاء سيرفر
                 </button>
-                <button onclick="logout()" class="btn" style="background:#ff416c">خروج</button>
+                <button onclick="logout()" class="btn btn-danger">خروج</button>
             </div>
         </header>
 
         <div class="dashboard-grid" id="serverList">
-            <!-- سيتم تحميل السيرفرات هنا -->
+            <div style="grid-column:1/-1; text-align:center; opacity:0.5; padding:50px;">جاري تحميل السيرفرات...</div>
         </div>
     </div>
 
     <!-- نافذة إنشاء سيرفر -->
     <div class="modal" id="createModal">
         <div class="modal-content">
+            <span class="modal-close" onclick="hideCreateModal()">×</span>
             <h2 style="margin-bottom:20px; color:var(--primary)">إنشاء سيرفر جديد</h2>
             <input type="text" id="serverName" placeholder="اسم السيرفر" 
                    style="width:100%; padding:15px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; color:white; margin-bottom:20px;">
             <div style="display:flex; gap:10px;">
                 <button onclick="createServer()" class="btn btn-primary" style="flex:1; justify-content:center;">إنشاء</button>
-                <button onclick="hideCreateModal()" class="btn" style="background:#333">إلغاء</button>
+                <button onclick="hideCreateModal()" class="btn" style="background:#333; flex:1; justify-content:center;">إلغاء</button>
             </div>
+        </div>
+    </div>
+
+    <!-- نافذة معلومات السيرفر -->
+    <div class="modal" id="infoModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="hideInfoModal()">×</span>
+            <h2 style="margin-bottom:20px; color:var(--primary)" id="infoTitle">معلومات السيرفر</h2>
+            <div id="infoContent"></div>
+            <button onclick="hideInfoModal()" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:20px;">إغلاق</button>
+        </div>
+    </div>
+
+    <!-- نافذة رفع الملفات -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="hideUploadModal()">×</span>
+            <h2 style="margin-bottom:20px; color:var(--primary)" id="uploadTitle">رفع ملفات</h2>
+            <input type="file" id="fileInput" multiple style="width:100%; padding:10px; margin-bottom:15px;">
+            <button onclick="uploadFiles()" class="btn btn-success" style="width:100%; justify-content:center;">رفع الملفات</button>
+            <button onclick="hideUploadModal()" class="btn" style="background:#333; width:100%; justify-content:center; margin-top:10px;">إلغاء</button>
+        </div>
+    </div>
+
+    <!-- نافذة البروكسي -->
+    <div class="modal" id="proxyModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="hideProxyModal()">×</span>
+            <h2 style="margin-bottom:20px; color:var(--primary)" id="proxyTitle">نظام البروكسي</h2>
+            <div id="proxyContent"></div>
+            <button onclick="hideProxyModal()" class="btn btn-primary" style="width:100%; justify-content:center; margin-top:20px;">إغلاق</button>
         </div>
     </div>
 
@@ -145,6 +206,8 @@
     </a>
 
     <script>
+        let currentServer = null;
+
         function createStars() {
             const container = document.getElementById('stars');
             for(let i=0; i<100; i++) {
@@ -161,24 +224,53 @@
 
         function showCreateModal() { document.getElementById('createModal').style.display = 'flex'; }
         function hideCreateModal() { document.getElementById('createModal').style.display = 'none'; }
+        function showInfoModal() { document.getElementById('infoModal').style.display = 'flex'; }
+        function hideInfoModal() { document.getElementById('infoModal').style.display = 'none'; }
+        function showUploadModal() { document.getElementById('uploadModal').style.display = 'flex'; }
+        function hideUploadModal() { document.getElementById('uploadModal').style.display = 'none'; }
+        function showProxyModal() { document.getElementById('proxyModal').style.display = 'flex'; }
+        function hideProxyModal() { document.getElementById('proxyModal').style.display = 'none'; }
 
         async function loadServers() {
             const res = await fetch('/api/servers/list');
             const servers = await res.json();
             const list = document.getElementById('serverList');
-            list.innerHTML = servers.length ? '' : '<div style="grid-column:1/-1; text-align:center; opacity:0.5; padding:50px;">لا توجد سيرفرات بعد</div>';
+            list.innerHTML = '';
+            
+            if (servers.length === 0) {
+                list.innerHTML = '<div style="grid-column:1/-1; text-align:center; opacity:0.5; padding:50px;">لا توجد سيرفرات بعد</div>';
+                return;
+            }
             
             servers.forEach(s => {
                 const card = document.createElement('div');
                 card.className = 'server-card';
                 card.innerHTML = `
-                    <div class="status-badge status-${s.status}">${s.status.toUpperCase()}</div>
-                    <h3 style="margin: 20px 0 10px 0">${s.name}</h3>
-                    <div style="display:flex; gap:10px; margin-top:20px;">
+                    <div class="status-badge status-${s.status}">${s.status === 'running' ? '🟢 يعمل' : '🔴 متوقف'}</div>
+                    <h3 class="server-title">${s.name}</h3>
+                    
+                    <div class="server-details">
+                        <div class="detail-item">
+                            <span>الحالة:</span>
+                            <span style="color:${s.status === 'running' ? '#00ff88' : '#ff416c'}">${s.status === 'running' ? 'يعمل' : 'متوقف'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="server-actions">
                         <button onclick="serverAction('${s.name}', '${s.status === 'running' ? 'stop' : 'start'}')" 
-                                class="btn" style="background:${s.status === 'running' ? '#ff416c' : '#00ff88'}; color:black; flex:1; justify-content:center;">
-                            ${s.status === 'running' ? 'إيقاف' : 'تشغيل'}
+                                class="btn" style="background:${s.status === 'running' ? '#ff416c' : '#00ff88'}; color:${s.status === 'running' ? 'white' : 'black'};">
+                            ${s.status === 'running' ? '⏹️ إيقاف' : '▶️ تشغيل'}
                         </button>
+                        <button onclick="deleteServer('${s.name}')" class="btn btn-danger">🗑️ حذف</button>
+                    </div>
+                    
+                    <div class="server-actions">
+                        <button onclick="showServerInfo('${s.name}')" class="btn btn-info">ℹ️ معلومات</button>
+                        <button onclick="showUploadUI('${s.name}')" class="btn btn-success">📤 رفع</button>
+                    </div>
+                    
+                    <div class="server-actions">
+                        <button onclick="showProxyUI('${s.name}')" class="btn" style="background:#9c27b0; grid-column:1/-1;">🔀 البروكسي</button>
                     </div>
                 `;
                 list.appendChild(card);
@@ -187,12 +279,32 @@
 
         async function createServer() {
             const name = document.getElementById('serverName').value;
+            if (!name) { alert('أدخل اسم السيرفر'); return; }
+            
             const res = await fetch('/api/servers/create', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({name})
             });
-            if(res.ok) { hideCreateModal(); loadServers(); }
+            if(res.ok) { 
+                hideCreateModal(); 
+                document.getElementById('serverName').value = '';
+                loadServers(); 
+            } else {
+                const err = await res.json();
+                alert('خطأ: ' + err.error);
+            }
+        }
+
+        async function deleteServer(name) {
+            if (!confirm(`هل تريد حذف السيرفر "${name}"؟`)) return;
+            
+            const res = await fetch('/api/servers/delete', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name})
+            });
+            if(res.ok) { loadServers(); }
         }
 
         async function serverAction(name, action) {
@@ -204,10 +316,79 @@
             loadServers();
         }
 
-        function logout() { fetch('/api/logout', {method:'POST'}).then(()=>window.location.href='/login'); }
+        async function showServerInfo(name) {
+            currentServer = name;
+            const res = await fetch(`/api/servers/info/${name}`);
+            const info = await res.json();
+            
+            let content = `<div class="server-details">
+                <div class="detail-item"><span>الحالة:</span><span>${info.status}</span></div>
+                <div class="detail-item"><span>عدد الملفات:</span><span>${info.file_count}</span></div>
+                <div class="detail-item"><span>الحجم الكلي:</span><span>${(info.total_size / 1024 / 1024).toFixed(2)} MB</span></div>
+            </div>
+            <h4 style="margin-top:20px; color:var(--primary)">الملفات:</h4>
+            <div class="file-list">`;
+            
+            info.files.forEach(f => {
+                content += `<div class="file-item">
+                    <span>${f.name}</span>
+                    <span>${(f.size / 1024).toFixed(2)} KB</span>
+                </div>`;
+            });
+            
+            content += '</div>';
+            document.getElementById('infoContent').innerHTML = content;
+            document.getElementById('infoTitle').textContent = `معلومات السيرفر: ${name}`;
+            showInfoModal();
+        }
+
+        function showUploadUI(name) {
+            currentServer = name;
+            document.getElementById('uploadTitle').textContent = `رفع ملفات - ${name}`;
+            showUploadModal();
+        }
+
+        async function uploadFiles() {
+            const files = document.getElementById('fileInput').files;
+            if (files.length === 0) { alert('اختر ملفات'); return; }
+            
+            for (let file of files) {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                await fetch(`/api/servers/upload/${currentServer}`, {
+                    method: 'POST',
+                    body: formData
+                });
+            }
+            
+            alert('تم رفع الملفات بنجاح!');
+            hideUploadModal();
+            loadServers();
+        }
+
+        function showProxyUI(name) {
+            currentServer = name;
+            document.getElementById('proxyTitle').textContent = `البروكسي - ${name}`;
+            
+            let content = `<div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:12px;">
+                <p style="margin-bottom:15px; opacity:0.8;">استخدم هذا الرابط للوصول إلى السيرفر عبر البروكسي:</p>
+                <div style="background:rgba(0,210,255,0.1); padding:15px; border-radius:8px; border:1px solid var(--border); word-break:break-all;">
+                    <code>/proxy/&lt;PORT&gt;/&lt;PATH&gt;</code>
+                </div>
+                <p style="margin-top:15px; font-size:13px; opacity:0.6;">مثال: <code>/proxy/8000/api/data</code></p>
+            </div>`;
+            
+            document.getElementById('proxyContent').innerHTML = content;
+            showProxyModal();
+        }
+
+        function logout() { 
+            fetch('/api/logout', {method:'POST'}).then(()=>window.location.href='/login'); 
+        }
 
         loadServers();
-        setInterval(loadServers, 5000); // تحديث تلقائي كل 5 ثواني
+        setInterval(loadServers, 5000);
     </script>
 </body>
 </html>

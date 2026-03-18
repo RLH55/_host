@@ -10,8 +10,10 @@ import secrets
 import time
 import threading
 import requests as req_lib
+import shutil
 from datetime import datetime, timedelta
 from flask import Flask, send_from_directory, request, jsonify, session, redirect, url_for, make_response
+from werkzeug.utils import secure_filename
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 USERS_DIR = os.path.join(BASE_DIR, "USERS")
@@ -20,13 +22,12 @@ os.makedirs(USERS_DIR, exist_ok=True)
 app = Flask(__name__, static_folder=BASE_DIR)
 app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(32))
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
+app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB max file size
 
-# مخزن العمليات (Processes)
 running_procs = {}
 USERS_FILE = os.path.join(BASE_DIR, "users.json")
 REMEMBER_TOKENS_FILE = os.path.join(BASE_DIR, "remember_tokens.json")
 
-# الحساب الرئيسي (المسؤول)
 ADMIN_USERNAME = "OMAR_ADMIN"
 ADMIN_PASSWORD = "OMAR_2026_BRO"
 
@@ -78,12 +79,10 @@ def monitor_servers():
         for username in list(running_procs.keys()):
             for server_folder in list(running_procs[username].keys()):
                 proc_info = running_procs[username][server_folder]
-                # إذا كان السيرفر مفترض أنه يعمل ولكن العملية توقفت
                 if proc_info.get('status') == 'running':
                     proc = proc_info.get('proc')
                     if proc is None or proc.poll() is not None:
                         print(f"⚠️ [Auto-Restart] Server {server_folder} for user {username} stopped. Restarting...")
-                        # إعادة التشغيل التلقائي
                         try:
                             startup_file = proc_info.get('startup_file')
                             if startup_file:
@@ -103,10 +102,9 @@ def monitor_servers():
                             print(f"❌ Failed to auto-restart {server_folder}: {e}")
         time.sleep(15)
 
-# بدء خيط المراقبة
 threading.Thread(target=monitor_servers, daemon=True).start()
 
-# --- سكريبت Keep-Alive لمنع توقف الموقع ---
+# --- سكريبت Keep-Alive ---
 def keep_alive_ping():
     """إرسال طلب لنفس الموقع لمنع وضع النوم في Render"""
     url = os.environ.get('RENDER_EXTERNAL_URL')
@@ -117,7 +115,7 @@ def keep_alive_ping():
                 print(f"✅ [Keep-Alive] Pinged {url}")
             except:
                 pass
-        time.sleep(600) # كل 10 دقائق
+        time.sleep(600)
 
 threading.Thread(target=keep_alive_ping, daemon=True).start()
 
@@ -192,10 +190,22 @@ def logout():
     session.pop('username', None)
     return jsonify({"status": "success"})
 
-# إضافة باقي الـ APIs المطلوبة لإدارة السيرفرات والمستخدمين (مختصرة للسرعة)
+# ============== Admin APIs ==============
+
+@app.route("/api/admin/users", methods=['GET'])
+def admin_get_users():
+    if 'username' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+    with open(USERS_FILE, "r", encoding="utf-8") as f:
+        users = json.load(f)
+    if not users.get(session['username'], {}).get('is_admin'):
+        return jsonify({"error": "Forbidden"}), 403
+    return jsonify(users)
+
 @app.route("/api/admin/create_user", methods=['POST'])
 def admin_create_user():
-    if 'username' not in session: return jsonify({"error": "Unauthorized"}), 401
+    if 'username' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
     with open(USERS_FILE, "r", encoding="utf-8") as f:
         users = json.load(f)
     if not users.get(session['username'], {}).get('is_admin'):
@@ -219,9 +229,40 @@ def admin_create_user():
     os.makedirs(os.path.join(USERS_DIR, new_user, "SERVERS"), exist_ok=True)
     return jsonify({"status": "success"})
 
+@app.route("/api/admin/delete_user", methods=['POST'])
+def admin_delete_user():
+    if 'username' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+    with open(USERS_FILE, "r", encoding="utf-8") as f:
+        users = json.load(f)
+    if not users.get(session['username'], {}).get('is_admin'):
+        return jsonify({"error": "Forbidden"}), 403
+    
+    data = request.json
+    user_to_delete = data.get('username')
+    
+    if user_to_delete == ADMIN_USERNAME:
+        return jsonify({"error": "لا يمكن حذف حساب المسؤول"}), 400
+    if user_to_delete not in users:
+        return jsonify({"error": "المستخدم غير موجود"}), 404
+    
+    del users[user_to_delete]
+    with open(USERS_FILE, "w", encoding="utf-8") as f:
+        json.dump(users, f, indent=2)
+    
+    # حذف مجلد المستخدم
+    user_dir = os.path.join(USERS_DIR, user_to_delete)
+    if os.path.exists(user_dir):
+        shutil.rmtree(user_dir)
+    
+    return jsonify({"status": "success"})
+
+# ============== Servers APIs ==============
+
 @app.route("/api/servers/list")
 def list_servers():
-    if 'username' not in session: return jsonify([])
+    if 'username' not in session:
+        return jsonify([])
     user_servers_dir = get_user_servers_dir(session['username'])
     servers = []
     for folder in os.listdir(user_servers_dir):
@@ -234,22 +275,118 @@ def list_servers():
 
 @app.route("/api/servers/create", methods=['POST'])
 def api_create_server():
-    if 'username' not in session: return jsonify({"error": "Unauthorized"}), 401
+    if 'username' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
     data = request.json
     name = re.sub(r"[^A-Za-z0-9\-\_]", "", data.get('name', ''))
-    if not name: return jsonify({"error": "اسم غير صالح"}), 400
+    if not name:
+        return jsonify({"error": "اسم غير صالح"}), 400
     
     path = os.path.join(get_user_servers_dir(session['username']), name)
-    if os.path.exists(path): return jsonify({"error": "موجود بالفعل"}), 400
+    if os.path.exists(path):
+        return jsonify({"error": "موجود بالفعل"}), 400
     
     os.makedirs(path)
     with open(os.path.join(path, "meta.json"), "w") as f:
         json.dump({"display_name": name, "startup_file": ""}, f)
     return jsonify({"status": "success"})
 
+@app.route("/api/servers/delete", methods=['POST'])
+def api_delete_server():
+    if 'username' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+    data = request.json
+    name = data.get('name')
+    
+    server_path = os.path.join(get_user_servers_dir(session['username']), name)
+    if not os.path.exists(server_path):
+        return jsonify({"error": "السيرفر غير موجود"}), 404
+    
+    # إيقاف السيرفر إن كان يعمل
+    username = session['username']
+    if username in running_procs and name in running_procs[username]:
+        try:
+            running_procs[username][name]['proc'].terminate()
+        except:
+            pass
+        del running_procs[username][name]
+    
+    # حذف المجلد
+    shutil.rmtree(server_path)
+    return jsonify({"status": "success"})
+
+@app.route("/api/servers/info/<server_name>")
+def get_server_info(server_name):
+    if 'username' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    server_path = os.path.join(get_user_servers_dir(session['username']), server_name)
+    if not os.path.exists(server_path):
+        return jsonify({"error": "السيرفر غير موجود"}), 404
+    
+    files = []
+    total_size = 0
+    for f in os.listdir(server_path):
+        file_path = os.path.join(server_path, f)
+        if os.path.isfile(file_path):
+            size = os.path.getsize(file_path)
+            total_size += size
+            files.append({
+                "name": f,
+                "size": size,
+                "modified": datetime.fromtimestamp(os.path.getmtime(file_path)).isoformat()
+            })
+    
+    status = "offline"
+    if session['username'] in running_procs and server_name in running_procs[session['username']]:
+        status = running_procs[session['username']][server_name]['status']
+    
+    return jsonify({
+        "name": server_name,
+        "status": status,
+        "files": files,
+        "total_size": total_size,
+        "file_count": len(files)
+    })
+
+@app.route("/api/servers/upload/<server_name>", methods=['POST'])
+def upload_file(server_name):
+    if 'username' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    server_path = os.path.join(get_user_servers_dir(session['username']), server_name)
+    if not os.path.exists(server_path):
+        return jsonify({"error": "السيرفر غير موجود"}), 404
+    
+    if 'file' not in request.files:
+        return jsonify({"error": "لا يوجد ملف"}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "لم يتم اختيار ملف"}), 400
+    
+    filename = secure_filename(file.filename)
+    file.save(os.path.join(server_path, filename))
+    return jsonify({"status": "success", "filename": filename})
+
+@app.route("/api/servers/delete_file/<server_name>/<filename>", methods=['POST'])
+def delete_file(server_name, filename):
+    if 'username' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    server_path = os.path.join(get_user_servers_dir(session['username']), server_name)
+    file_path = os.path.join(server_path, secure_filename(filename))
+    
+    if not os.path.exists(file_path):
+        return jsonify({"error": "الملف غير موجود"}), 404
+    
+    os.remove(file_path)
+    return jsonify({"status": "success"})
+
 @app.route("/api/servers/action", methods=['POST'])
 def api_server_action():
-    if 'username' not in session: return jsonify({"error": "Unauthorized"}), 401
+    if 'username' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
     data = request.json
     name = data.get('name')
     action = data.get('action')
@@ -264,9 +401,11 @@ def api_server_action():
                 startup_file = f
                 break
         
-        if not startup_file: return jsonify({"error": "لم يتم العثور على ملف تشغيل"}), 400
+        if not startup_file:
+            return jsonify({"error": "لم يتم العثور على ملف تشغيل"}), 400
         
-        if username not in running_procs: running_procs[username] = {}
+        if username not in running_procs:
+            running_procs[username] = {}
         
         cmd = [sys.executable, startup_file] if startup_file.endswith('.py') else ["node", startup_file]
         log_file = open(os.path.join(server_path, "server.log"), "a", encoding="utf-8")
@@ -283,10 +422,11 @@ def api_server_action():
     elif action == 'stop':
         if username in running_procs and name in running_procs[username]:
             proc_info = running_procs[username][name]
-            proc_info['status'] = 'offline' # تعيينها يدوياً لمنع إعادة التشغيل
+            proc_info['status'] = 'offline'
             try:
                 proc_info['proc'].terminate()
-            except: pass
+            except:
+                pass
             del running_procs[username][name]
             return jsonify({"status": "success"})
             

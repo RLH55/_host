@@ -63,21 +63,6 @@
             50% { opacity: 1; transform: scale(1.2); }
         }
 
-        .nebula {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(0, 210, 255, 0.1) 0%, transparent 70%);
-            filter: blur(80px);
-            border-radius: 50%;
-            animation: moveNebula 20s infinite alternate ease-in-out;
-        }
-
-        @keyframes moveNebula {
-            0% { transform: translate(-20%, -20%); }
-            100% { transform: translate(20%, 20%); }
-        }
-
         /* التصميم الرئيسي */
         .container {
             max-width: 1200px;
@@ -151,6 +136,11 @@
             background: linear-gradient(45deg, #ff416c, #ff4b2b);
         }
 
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+        }
+
         /* لوحة التحكم */
         .dashboard-grid {
             display: grid;
@@ -219,6 +209,8 @@
         /* قائمة المستخدمين */
         .user-list {
             list-style: none;
+            max-height: 500px;
+            overflow-y: auto;
         }
 
         .user-item {
@@ -247,6 +239,24 @@
         .user-info span {
             font-size: 12px;
             opacity: 0.5;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .user-actions .btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            background: rgba(255, 65, 108, 0.2);
+            color: #ff416c;
+            border: 1px solid #ff416c;
+        }
+
+        .user-actions .btn:hover {
+            background: #ff416c;
+            color: white;
         }
 
         /* زر المطور */
@@ -301,7 +311,6 @@
 <body>
     <div class="animated-bg" id="bg">
         <div class="stars" id="stars"></div>
-        <div class="nebula"></div>
     </div>
 
     <div id="toast"></div>
@@ -313,7 +322,7 @@
                 <span class="admin-badge">ADMIN PANEL</span>
             </div>
             <div class="user-controls">
-                <span id="adminName">مرحباً، <span style="color: var(--primary);">RLH55</span></span>
+                <span id="adminName">مرحباً، <span style="color: var(--primary);">OMAR_ADMIN</span></span>
                 <button onclick="logout()" class="btn btn-danger">
                     <i class="fas fa-sign-out-alt"></i> خروج
                 </button>
@@ -343,7 +352,7 @@
             <div class="card">
                 <div class="card-title">
                     <i class="fas fa-users"></i> إدارة المستخدمين
-                    <button onclick="loadUsers()" style="background:none; border:none; color:var(--primary); cursor:pointer; margin-right:auto;">
+                    <button onclick="loadUsers()" style="background:none; border:none; color:var(--primary); cursor:pointer; margin-right:auto; font-size:18px;">
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </div>
@@ -394,13 +403,14 @@
                     Object.keys(users).forEach(u => {
                         const item = document.createElement('li');
                         item.className = 'user-item';
+                        const isAdmin = users[u].is_admin;
                         item.innerHTML = `
                             <div class="user-info">
-                                <h4>${u} ${users[u].is_admin ? '<i class="fas fa-crown" style="color:#ffd700"></i>' : ''}</h4>
+                                <h4>${u} ${isAdmin ? '<i class="fas fa-crown" style="color:#ffd700"></i>' : ''}</h4>
                                 <span>تاريخ الإنشاء: ${users[u].created_at ? users[u].created_at.split('T')[0] : 'غير معروف'}</span>
                             </div>
                             <div class="user-actions">
-                                <button class="btn" style="background:rgba(255,255,255,0.1); padding:5px 10px;">إدارة</button>
+                                ${u !== 'OMAR_ADMIN' ? `<button onclick="deleteUser('${u}')" class="btn">🗑️ حذف</button>` : '<span style="opacity:0.5">المسؤول</span>'}
                             </div>
                         `;
                         list.appendChild(item);
@@ -408,6 +418,7 @@
                 }
             } catch (e) {
                 console.error(e);
+                showToast('خطأ في تحميل المستخدمين', 'error');
             }
         }
 
@@ -431,6 +442,29 @@
                     showToast('تم إنشاء الحساب بنجاح!');
                     document.getElementById('newUsername').value = '';
                     document.getElementById('newPassword').value = '';
+                    loadUsers();
+                } else {
+                    showToast(data.error || 'حدث خطأ ما', 'error');
+                }
+            } catch (e) {
+                showToast('خطأ في الاتصال بالسيرفر', 'error');
+            }
+        }
+
+        async function deleteUser(username) {
+            if (!confirm(`هل تريد حذف المستخدم "${username}"؟ سيتم حذف جميع بيانات هذا المستخدم!`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/delete_user', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username})
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast('تم حذف المستخدم بنجاح!');
                     loadUsers();
                 } else {
                     showToast(data.error || 'حدث خطأ ما', 'error');
