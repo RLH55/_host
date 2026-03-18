@@ -405,26 +405,58 @@
             width: 100%;
             padding: 13px;
             border-radius: 14px;
-            border: 1.5px solid rgba(0, 210, 255, 0.3);
-            background: transparent;
+            border: 1.5px solid rgba(0, 183, 255, 0.35);
+            background: linear-gradient(135deg, rgba(0, 183, 255, 0.06), rgba(41, 98, 255, 0.06));
             color: var(--text);
             font-weight: 700;
             font-size: 15px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: 'Cairo', sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dev-btn .tg-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #2aabee, #229ed9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            transition: transform 0.3s;
+            box-shadow: 0 0 10px rgba(42, 171, 238, 0.4);
         }
 
         .dev-btn:hover {
-            border-color: var(--primary);
-            background: rgba(0, 210, 255, 0.08);
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+            border-color: #2aabee;
+            background: linear-gradient(135deg, rgba(42, 171, 238, 0.12), rgba(34, 158, 217, 0.08));
+            box-shadow: 0 0 25px rgba(42, 171, 238, 0.25);
+            transform: translateY(-2px);
         }
+
+        .dev-btn:hover .tg-icon {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        .dev-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(42, 171, 238, 0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .dev-btn:hover::before { left: 100%; }
 
         /* الحقوق */
         .footer {
@@ -560,13 +592,14 @@
             </button>
 
             <a href="https://t.me/RLH55" target="_blank" class="dev-btn">
-                <i class="fab fa-telegram-plane"></i> المطور @RLH55
+                <span class="tg-icon"><i class="fab fa-telegram-plane"></i></span>
+                <span>التواصل مع المطور <strong>@RLH55</strong></span>
             </a>
         </form>
 
         <div class="footer">
-            <div class="copyright">©OMAR 2026</div>
-            <div class="version">مطور بواسطة OMAR · آمن ومشفر 🔒</div>
+            <div class="copyright">©2025-2026 جميع الحقوق محفوظة المطور OMAR</div>
+            <div class="version">BRO HOST · آمن ومشفر 🔒</div>
         </div>
     </div>
 

@@ -9,6 +9,7 @@ import hashlib
 import secrets
 import time
 import threading
+import zipfile
 import requests as req_lib
 import shutil
 from datetime import datetime, timedelta
@@ -99,15 +100,16 @@ def find_startup_file(server_path, preferred=None):
     
     # البحث بالأولوية
     priority_files = ['main.py', 'app.py', 'bot.py', 'index.py', 'run.py',
-                      'index.js', 'server.js', 'app.js', 'main.js', 'bot.js']
+                      'index.js', 'server.js', 'app.js', 'main.js', 'bot.js',
+                      'index.php', 'main.php', 'app.php', 'bot.php']
     
     for f in priority_files:
         if os.path.exists(os.path.join(server_path, f)):
             return f
     
-    # البحث عن أي ملف .py أو .js
+    # البحث عن أي ملف .py أو .js أو .php
     for f in os.listdir(server_path):
-        if f.endswith('.py') or f.endswith('.js'):
+        if f.endswith('.py') or f.endswith('.js') or f.endswith('.php'):
             if f != 'meta.json':
                 return f
     
@@ -134,6 +136,11 @@ def monitor_servers():
                                         cmd = [sys.executable, startup_file]
                                     elif startup_file.endswith('.js'):
                                         cmd = ['node', startup_file]
+                                    elif startup_file.endswith('.php'):
+                                        php_bin = shutil.which('php')
+                                        if not php_bin:
+                                            continue
+                                        cmd = [php_bin, '-S', '0.0.0.0:8080', startup_file]
                                     else:
                                         continue
 
@@ -479,8 +486,8 @@ def set_startup_file():
     if not os.path.exists(file_path):
         return jsonify({"error": "الملف غير موجود"}), 404
 
-    if not (startup_file.endswith('.py') or startup_file.endswith('.js')):
-        return jsonify({"error": "يجب أن يكون الملف .py أو .js"}), 400
+    if not (startup_file.endswith('.py') or startup_file.endswith('.js') or startup_file.endswith('.php')):
+        return jsonify({"error": "يجب أن يكون الملف .py أو .js أو .php"}), 400
 
     meta = get_server_meta(server_path)
     meta['startup_file'] = startup_file
@@ -507,13 +514,38 @@ def upload_file(server_name):
     filename = secure_filename(file.filename)
     file.save(os.path.join(server_path, filename))
 
-    # إذا كان أول ملف .py أو .js، عيّنه تلقائياً كملف تشغيل
+    # إذا كان أول ملف قابل للتشغيل، عيّنه تلقائياً كملف تشغيل
     meta = get_server_meta(server_path)
-    if not meta.get('startup_file') and (filename.endswith('.py') or filename.endswith('.js')):
+    runnable_exts = ('.py', '.js', '.php')
+    if not meta.get('startup_file') and filename.endswith(runnable_exts):
         meta['startup_file'] = filename
         save_server_meta(server_path, meta)
 
-    return jsonify({"status": "success", "filename": filename})
+    # إذا كان ملف ZIP، فك ضغطه تلقائياً
+    extracted_files = []
+    if filename.endswith('.zip'):
+        try:
+            zip_path = os.path.join(server_path, filename)
+            with zipfile.ZipFile(zip_path, 'r') as zf:
+                # فك الضغط في نفس مجلد السيرفر
+                zf.extractall(server_path)
+                extracted_files = zf.namelist()
+            # تعيين ملف التشغيل تلقائياً من الملفات المفكوكة
+            if not meta.get('startup_file'):
+                for ef in extracted_files:
+                    ef_base = os.path.basename(ef)
+                    if ef_base.endswith(runnable_exts) and not ef_base.startswith('.'):
+                        meta['startup_file'] = ef_base
+                        save_server_meta(server_path, meta)
+                        break
+        except Exception as e:
+            return jsonify({"status": "success", "filename": filename, "zip_error": str(e)})
+
+    return jsonify({
+        "status": "success",
+        "filename": filename,
+        "extracted": extracted_files if extracted_files else None
+    })
 
 @app.route("/api/servers/delete_file/<server_name>/<filename>", methods=['POST'])
 def delete_file(server_name, filename):
@@ -557,7 +589,7 @@ def api_server_action():
 
         if not startup_file:
             return jsonify({
-                "error": "لم يتم العثور على ملف تشغيل. ارفع ملف .py أو .js أولاً، ثم اضغط 'تعيين تشغيل'."
+                "error": "لم يتم العثور على ملف تشغيل. ارفع ملف .py أو .js أو .php أولاً، ثم اضغط 'تعيين تشغيل'."
             }), 400
 
         full_path = os.path.join(server_path, startup_file)
@@ -579,8 +611,14 @@ def api_server_action():
             cmd = [sys.executable, startup_file]
         elif startup_file.endswith('.js'):
             cmd = ['node', startup_file]
+        elif startup_file.endswith('.php'):
+            # التحقق من وجود PHP
+            php_bin = shutil.which('php')
+            if not php_bin:
+                return jsonify({"error": "PHP غير مثبت على السيرفر. يرجى التواصل مع المطور."}), 400
+            cmd = [php_bin, '-S', '0.0.0.0:8080', startup_file]
         else:
-            return jsonify({"error": "نوع الملف غير مدعوم"}), 400
+            return jsonify({"error": "نوع الملف غير مدعوم. الأنواع المدعومة: .py .js .php"}), 400
 
         log_path = os.path.join(server_path, "server.log")
         log_file = open(log_path, "a", encoding="utf-8")
