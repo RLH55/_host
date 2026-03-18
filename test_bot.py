@@ -1,10 +1,20 @@
 import time
 import asyncio
+import requests
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 # التوكن الخاص بك يا عمر
 TOKEN = "8537430970:AAGHMgTYpG5U3vKHC3P8Kr28ZQyp4qOC1tU"
+
+def clear_webhook():
+    """حذف أي Webhook قديم لضمان عمل Polling بدون تعارض"""
+    try:
+        url = f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=True"
+        response = requests.get(url)
+        print(f"🔄 تنظيف جلسات البوت: {response.json().get('description', 'تم بنجاح')}")
+    except Exception as e:
+        print(f"⚠️ خطأ أثناء تنظيف الجلسات: {e}")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """أمر البداية"""
@@ -34,6 +44,9 @@ async def ping(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 if __name__ == '__main__':
+    print("🧹 جاري تنظيف الجلسات القديمة...")
+    clear_webhook()
+    
     print("🚀 جاري تشغيل بوت الاختبار...")
     application = ApplicationBuilder().token(TOKEN).build()
     
