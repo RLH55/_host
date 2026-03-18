@@ -24,8 +24,8 @@ USERS_FILE = os.path.join(BASE_DIR, "users.json")
 REMEMBER_TOKENS_FILE = os.path.join(BASE_DIR, "remember_tokens.json")
 
 # الحساب الرئيسي (المسؤول)
-ADMIN_USERNAME = "OMAROMAR1983"
-ADMIN_PASSWORD = "OMAROMAR1983"
+ADMIN_USERNAME = "OMAR_ADMIN"
+ADMIN_PASSWORD = "OMAR_2026_BRO"
 
 # ============== Helper Functions ==============
 

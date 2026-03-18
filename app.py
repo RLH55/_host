@@ -29,8 +29,8 @@ running_procs = {}
 USERS_FILE = os.path.join(BASE_DIR, "users.json")
 REMEMBER_TOKENS_FILE = os.path.join(BASE_DIR, "remember_tokens.json")
 
-ADMIN_USERNAME = "BRO1983"
-ADMIN_PASSWORD = "OMAROMAR19830"
+ADMIN_USERNAME = "OMAR_ADMIN"
+ADMIN_PASSWORD = "OMAR_2026_BRO"
 
 # ============== Helper Functions ==============
 
