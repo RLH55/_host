@@ -1,18 +1,20 @@
 import time
 import asyncio
-import requests
+import aiohttp
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 # التوكن الخاص بك يا عمر
 TOKEN = "8537430970:AAGHMgTYpG5U3vKHC3P8Kr28ZQyp4qOC1tU"
 
-def clear_webhook():
+async def clear_webhook():
     """حذف أي Webhook قديم لضمان عمل Polling بدون تعارض"""
     try:
-        url = f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=True"
-        response = requests.get(url)
-        print(f"🔄 تنظيف جلسات البوت: {response.json().get('description', 'تم بنجاح')}")
+        async with aiohttp.ClientSession() as session:
+            url = f"https://api.telegram.org/bot{TOKEN}/deleteWebhook?drop_pending_updates=True"
+            async with session.get(url) as response:
+                data = await response.json()
+                print(f"🔄 تنظيف جلسات البوت: {data.get('description', 'تم بنجاح')}")
     except Exception as e:
         print(f"⚠️ خطأ أثناء تنظيف الجلسات: {e}")
 
@@ -21,39 +23,52 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_name = update.effective_user.first_name
     await update.message.reply_text(
         f"أهلاً بك يا {user_name} في بوت اختبار BRO HOST! 🚀\n\n"
-        "لقد تم تشغيل هذا البوت بنجاح على سيرفرك.\n"
-        "استخدم أمر /ping لاختبار سرعة الاستجابة."
+        "لقد تم تحسين سرعة البوت الآن.\n"
+        "استخدم أمر /ping لاختبار السرعة الجديدة."
     )
 
 async def ping(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """أمر قياس سرعة الاستجابة (Ping)"""
+    """أمر قياس سرعة الاستجابة (Ping) المحسن"""
     start_time = time.time()
-    # إرسال رسالة أولية
-    message = await update.message.reply_text("⚡ جاري قياس السرعة...")
+    # إرسال رسالة أولية بأقل حجم بيانات ممكن
+    message = await update.message.reply_text("⚡")
     end_time = time.time()
     
     # حساب الفرق بالملي ثانية
     ping_ms = round((end_time - start_time) * 1000)
     
-    # تحديث الرسالة بالنتيجة
+    # تحديد الحالة بناءً على السرعة
+    status = "ممتاز 🟢" if ping_ms < 300 else "جيد 🟡" if ping_ms < 600 else "بطيء 🔴"
+    
+    # تحديث الرسالة بالنتيجة النهائية
     await message.edit_text(
-        f"📊 **نتائج اختبار السرعة:**\n\n"
+        f"📊 **نتائج اختبار السرعة (المحسن):**\n\n"
         f"🚀 سرعة الاستجابة: `{ping_ms}ms`\n"
+        f"⚡ الحالة: {status}\n"
         f"🖥️ السيرفر: Render (BRO HOST)\n"
         f"✅ الحالة: مستقر وشغال 24/7"
     )
 
-if __name__ == '__main__':
+async def main():
     print("🧹 جاري تنظيف الجلسات القديمة...")
-    clear_webhook()
+    await clear_webhook()
     
-    print("🚀 جاري تشغيل بوت الاختبار...")
+    print("🚀 جاري تشغيل بوت الاختبار المحسن...")
     application = ApplicationBuilder().token(TOKEN).build()
     
-    start_handler = CommandHandler('start', start)
-    ping_handler = CommandHandler('ping', ping)
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(CommandHandler('ping', ping))
     
-    application.add_handler(start_handler)
-    application.add_handler(ping_handler)
+    await application.initialize()
+    await application.start()
+    await application.updater.start_polling(drop_pending_updates=True)
     
-    application.run_polling()
+    # إبقاء البوت يعمل
+    while True:
+        await asyncio.sleep(3600)
+
+if __name__ == '__main__':
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit):
+        pass
