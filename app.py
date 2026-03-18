@@ -306,6 +306,8 @@ def admin_create_user():
     data = request.json
     new_user = data.get('username', '').strip()
     new_pass = data.get('password', '')
+    duration_days = int(data.get('duration', 30))
+    max_servers = int(data.get('max_servers', 3))
 
     if not new_user or not new_pass:
         return jsonify({"error": "البيانات غير مكتملة"}), 400
@@ -313,9 +315,13 @@ def admin_create_user():
     if new_user in users:
         return jsonify({"error": "المستخدم موجود بالفعل"}), 400
 
+    expiry_date = (datetime.now() + timedelta(days=duration_days)).isoformat()
+
     users[new_user] = {
         "password": hashlib.sha256(new_pass.encode()).hexdigest(),
         "created_at": datetime.now().isoformat(),
+        "expiry_date": expiry_date,
+        "max_servers": max_servers,
         "last_login": None,
         "is_admin": False
     }
@@ -358,7 +364,30 @@ def admin_delete_user():
 def list_servers():
     if 'username' not in session:
         return jsonify([])
-    user_servers_dir = get_user_servers_dir(session['username'])
+    
+    username = session['username']
+    with open(USERS_FILE, "r", encoding="utf-8") as f:
+        users = json.load(f)
+    
+    user_data = users.get(username, {})
+    is_expired = False
+    days_left = 0
+    
+    if not user_data.get('is_admin'):
+        expiry_date = datetime.fromisoformat(user_data.get('expiry_date', datetime.now().isoformat()))
+        if datetime.now() > expiry_date:
+            is_expired = True
+            # إيقاف جميع سيرفرات المستخدم إذا انتهى الاشتراك
+            if username in running_procs:
+                for s_name in list(running_procs[username].keys()):
+                    try:
+                        running_procs[username][s_name]['proc'].terminate()
+                        del running_procs[username][s_name]
+                    except: pass
+        else:
+            days_left = (expiry_date - datetime.now()).days
+
+    user_servers_dir = get_user_servers_dir(username)
     servers = []
     for folder in os.listdir(user_servers_dir):
         folder_path = os.path.join(user_servers_dir, folder)
@@ -384,18 +413,43 @@ def list_servers():
                 "status": status,
                 "startup_file": startup_file
             })
-    return jsonify(servers)
+    
+    return jsonify({
+        "servers": servers,
+        "is_expired": is_expired,
+        "days_left": days_left,
+        "max_servers": user_data.get('max_servers', 3),
+        "current_count": len(servers)
+    })
 
 @app.route("/api/servers/create", methods=['POST'])
 def api_create_server():
     if 'username' not in session:
         return jsonify({"error": "Unauthorized"}), 401
+    
+    username = session['username']
+    with open(USERS_FILE, "r", encoding="utf-8") as f:
+        users = json.load(f)
+    
+    user_data = users.get(username, {})
+    if not user_data.get('is_admin'):
+        # تحقق من انتهاء الاشتراك
+        expiry_date = datetime.fromisoformat(user_data.get('expiry_date', datetime.now().isoformat()))
+        if datetime.now() > expiry_date:
+            return jsonify({"error": "انتهى اشتراكك! يرجى التجديد."}), 403
+            
+        # تحقق من عدد السيرفرات
+        user_servers_dir = get_user_servers_dir(username)
+        current_servers = [d for d in os.listdir(user_servers_dir) if os.path.isdir(os.path.join(user_servers_dir, d))]
+        if len(current_servers) >= user_data.get('max_servers', 3):
+            return jsonify({"error": f"لقد وصلت للحد الأقصى من السيرفرات ({user_data.get('max_servers')} سيرفرات)"}), 403
+
     data = request.json
     name = re.sub(r"[^A-Za-z0-9\-\_]", "", data.get('name', ''))
     if not name:
         return jsonify({"error": "اسم غير صالح"}), 400
 
-    path = os.path.join(get_user_servers_dir(session['username']), name)
+    path = os.path.join(get_user_servers_dir(username), name)
     if os.path.exists(path):
         return jsonify({"error": "السيرفر موجود بالفعل"}), 400
 
@@ -583,6 +637,15 @@ def api_server_action():
         return jsonify({"error": "السيرفر غير موجود"}), 404
 
     if action == 'start':
+        # تحقق من الاشتراك قبل التشغيل
+        with open(USERS_FILE, "r", encoding="utf-8") as f:
+            users = json.load(f)
+        user_data = users.get(username, {})
+        if not user_data.get('is_admin'):
+            expiry_date = datetime.fromisoformat(user_data.get('expiry_date', datetime.now().isoformat()))
+            if datetime.now() > expiry_date:
+                return jsonify({"error": "انتهى اشتراكك! لا يمكنك تشغيل السيرفرات."}), 403
+
         # إيجاد ملف التشغيل
         meta = get_server_meta(server_path)
         startup_file = meta.get('startup_file') or find_startup_file(server_path)

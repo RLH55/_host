@@ -105,6 +105,43 @@
             align-items: center;
         }
 
+        .subscription-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            padding: 12px 18px;
+            background: rgba(0, 210, 255, 0.08);
+            border: 1px solid rgba(0, 210, 255, 0.25);
+            border-radius: 12px;
+            margin-right: auto;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .subscription-info.expired {
+            background: rgba(255, 65, 108, 0.1);
+            border-color: rgba(255, 65, 108, 0.3);
+            color: #ff6b8a;
+        }
+
+        .subscription-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .subscription-item i {
+            font-size: 14px;
+        }
+
+        .subscription-item.days-left {
+            color: #00ff88;
+        }
+
+        .subscription-item.servers-count {
+            color: var(--primary);
+        }
+
         .btn {
             padding: 11px 22px;
             border-radius: 12px;
@@ -512,8 +549,23 @@
                 <img src="/avatar.png" alt="BRO" class="logo-avatar" onerror="this.style.display='none'">
                 <div class="logo">BRO HOST</div>
             </div>
+            <div class="subscription-info" id="subscriptionInfo" style="display: none;">
+                <div class="subscription-item days-left">
+                    <i class="fas fa-calendar-days"></i>
+                    <span id="daysLeftText">الأيام المتبقية: -</span>
+                </div>
+                <div style="width: 1px; height: 20px; background: rgba(255,255,255,0.2);"></div>
+                <div class="subscription-item servers-count">
+                    <i class="fas fa-server"></i>
+                    <span id="serversCountText">السيرفرات: -/-</span>
+                </div>
+            </div>
+            <div class="subscription-info expired" id="expiredInfo" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>انتهى اشتراكك! يرجى التواصل مع المطور</span>
+            </div>
             <div class="header-controls">
-                <button onclick="showCreateModal()" class="btn btn-primary">
+                <button onclick="showCreateModal()" class="btn btn-primary" id="createServerBtn">
                     <i class="fas fa-plus"></i> إنشاء سيرفر
                 </button>
                 <button onclick="logout()" class="btn btn-danger">
@@ -521,6 +573,15 @@
                 </button>
             </div>
         </header>
+
+        <div id="expiredAlert" style="display: none; background: rgba(255, 65, 108, 0.15); border: 1px solid rgba(255, 65, 108, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 25px; text-align: center;">
+            <div style="font-size: 24px; margin-bottom: 10px;">🗑️</div>
+            <div style="font-size: 18px; font-weight: bold; color: #ff6b8a; margin-bottom: 8px;">انتهى اشتراكك!</div>
+            <div style="opacity: 0.8; margin-bottom: 15px;">لقد انتهت مدة اشتراكك وتم إيقاف جميع السيرفرات.</div>
+            <a href="https://t.me/RLH55" target="_blank" class="btn btn-primary" style="display: inline-flex;">
+                <i class="fab fa-telegram-plane"></i> التواصل مع المطور للتجديد
+            </a>
+        </div>
 
         <div class="servers-grid" id="serversList">
             <div class="empty-state" style="grid-column:1/-1;">
@@ -535,12 +596,15 @@
         <div class="modal-content">
             <button class="modal-close" onclick="hideModal('createModal')">×</button>
             <div class="modal-title">إنشاء سيرفر جديد</div>
+            <div id="serverLimitAlert" style="background: rgba(255, 65, 108, 0.15); border: 1px solid rgba(255, 65, 108, 0.3); border-radius: 10px; padding: 12px; margin-bottom: 15px; color: #ff6b8a; font-size: 13px; display: none;">
+                <i class="fas fa-exclamation-circle"></i> <span id="serverLimitMsg"></span>
+            </div>
             <div class="form-group">
                 <label>اسم السيرفر</label>
                 <input type="text" id="serverName" class="form-control" placeholder="مثال: my-bot" onkeypress="if(event.key==='Enter') createServer()">
             </div>
             <div class="modal-buttons">
-                <button onclick="createServer()" class="btn btn-primary">
+                <button onclick="createServer()" class="btn btn-primary" id="createServerModalBtn">
                     <i class="fas fa-plus"></i> إنشاء
                 </button>
                 <button onclick="hideModal('createModal')" class="btn" style="background:#333;">إلغاء</button>
@@ -704,9 +768,48 @@
         async function loadServers() {
             try {
                 const res = await fetch('/api/servers/list');
-                const servers = await res.json();
+                const data = await res.json();
                 const list = document.getElementById('serversList');
                 list.innerHTML = '';
+
+                let servers = [];
+                let is_expired = false;
+                let days_left = 0;
+                let max_servers = 3;
+                let current_count = 0;
+
+                if (Array.isArray(data)) {
+                    servers = data;
+                } else {
+                    servers = data.servers || [];
+                    is_expired = data.is_expired || false;
+                    days_left = data.days_left || 0;
+                    max_servers = data.max_servers || 3;
+                    current_count = data.current_count || 0;
+                }
+
+                const subscriptionInfo = document.getElementById('subscriptionInfo');
+                const expiredInfo = document.getElementById('expiredInfo');
+                const expiredAlert = document.getElementById('expiredAlert');
+                const createServerBtn = document.getElementById('createServerBtn');
+
+                if (is_expired) {
+                    subscriptionInfo.style.display = 'none';
+                    expiredInfo.style.display = 'flex';
+                    expiredAlert.style.display = 'block';
+                    createServerBtn.disabled = true;
+                    createServerBtn.style.opacity = '0.5';
+                    createServerBtn.style.cursor = 'not-allowed';
+                } else {
+                    subscriptionInfo.style.display = 'flex';
+                    expiredInfo.style.display = 'none';
+                    expiredAlert.style.display = 'none';
+                    createServerBtn.disabled = false;
+                    createServerBtn.style.opacity = '1';
+                    createServerBtn.style.cursor = 'pointer';
+                    document.getElementById('daysLeftText').textContent = `الأيام المتبقية: ${days_left} يوم`;
+                    document.getElementById('serversCountText').textContent = `السيرفرات: ${current_count}/${max_servers}`;
+                }
 
                 if (servers.length === 0) {
                     list.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state-icon">📭</div><p>لا توجد سيرفرات بعد. اضغط "إنشاء سيرفر" للبدء!</p></div>';
@@ -777,10 +880,17 @@
 
             if (res.ok) {
                 hideModal('createModal');
+                document.getElementById('serverLimitAlert').style.display = 'none';
                 showToast('✅ تم إنشاء السيرفر بنجاح!');
                 loadServers();
             } else {
                 const err = await res.json();
+                if (err.error.includes('انتهى اشتراك')) {
+                    showToast('⏰ انتهى اشتراكك! يرجى التواصل مع المطور', 'error');
+                } else if (err.error.includes('لقد وصلت')) {
+                    document.getElementById('serverLimitAlert').style.display = 'block';
+                    document.getElementById('serverLimitMsg').textContent = err.error;
+                }
                 showToast('❌ ' + (err.error || 'فشل إنشاء السيرفر'), 'error');
             }
         }

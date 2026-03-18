@@ -344,6 +344,16 @@
                     <label>كلمة المرور</label>
                     <input type="password" id="newPassword" class="form-control" placeholder="6 أحرف على الأقل">
                 </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>مدة الاشتراك (أيام)</label>
+                        <input type="number" id="newDuration" class="form-control" value="30" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>عدد السيرفرات</label>
+                        <input type="number" id="newMaxServers" class="form-control" value="3" min="1">
+                    </div>
+                </div>
                 <button onclick="createUser()" class="btn btn-primary" style="width: 100%; justify-content: center;">
                     <i class="fas fa-magic"></i> إنشاء الحساب الأسطوري
                 </button>
@@ -426,8 +436,10 @@
         async function createUser() {
             const username = document.getElementById('newUsername').value;
             const password = document.getElementById('newPassword').value;
+            const duration = document.getElementById('newDuration').value;
+            const max_servers = document.getElementById('newMaxServers').value;
 
-            if (!username || !password) {
+            if (!username || !password || !duration || !max_servers) {
                 showToast('يرجى ملء جميع الحقول', 'error');
                 return;
             }
@@ -436,7 +448,7 @@
                 const res = await fetch('/api/admin/create_user', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({username, password})
+                    body: JSON.stringify({username, password, duration, max_servers})
                 });
                 const data = await res.json();
                 if (res.ok) {
